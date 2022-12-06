@@ -1,0 +1,65 @@
+Класс поля (Board):
+	__init__: генерация поля
+
+	render(self, sc(экран)): вывод поля на экран
+	""" возможанная реализация
+	for i in range(self.height):
+            for j in range(self.width):
+                x = self.cell_size * j + self.left
+                y = self.cell_size * i + self.top
+                if self.board[i][j] == 0:
+                    pygame.draw.rect(sc, (0, 0, 0), ((x, y), (self.cell_size, self.cell_size)))
+                elif self.board[i][j] == 1:
+                    pygame.draw.rect(sc, (0, 255, 0), ((x, y), (self.cell_size, self.cell_size)))
+                pygame.draw.rect(sc, color, (x, y, self.cell_size, self.cell_size), 1)
+	""" возможанная реализация
+
+	set_view: для изменения отступов и размера клеток (можно, но не обязательно)
+
+	get_click: для обработки клика
+	""" возможанная реализация
+        	cell = self.get_cell
+        	self.on_click
+	""" возможанная реализация
+
+    	get_cell: получение координат клетки по которой клик (если мимо поля None)
+
+		  если ходить на клавиши вернет сколько нужно прибавить к x и y
+		  например: (0, 1) по y выше на 1; (-1, 0) по x меньше на 1
+
+    	on_click: действия с клеткой
+
+	set_player: изменение координат игрока
+        
+	get_player: получение координат игрока
+
+	set_monster: изменение координат монстра
+        
+	get_monster: получение координат монстра
+
+
+
+Класс игрок(player):
+	__init__: появляеся игрок (x, y, хп, пуспой инвентарь)
+
+	set_coord:  изменение координат игрока
+        
+	get_coord:  получение координат игрока
+
+	add_weapon: добавления оружия
+
+	chang_weapon: изменения оружия
+
+	heal: сколько здоровия у игрока
+
+	healing: вылечиться
+
+
+Интерфейс класса оружия(Weapon):
+	__init__: (оглушаюший эффект, патроны)
+
+	get_damage: (оглушаюший эффект)
+
+	set_ammun: изменение кол-ва патрон
+        
+	get_ammun: получение кол-ва патрон
