@@ -85,6 +85,7 @@ class Board:
 
     def set_start_finish_points(self):
         self.seed = self.randomize(self.seed)
+        print(self.seed)
         # чёт и чёт - верх
         # чёт и нечёт - право
         # нечёт и чёт - лево
@@ -119,7 +120,9 @@ class Board:
         elif start_pos == 'left':
             self.start_coords = (coord, 0)
             self.finish_coords = (coord2, self.width - 1)
+            self.paint_start_finish_points()
 
+    def paint_start_finish_points(self):
         for range_y in range(-1, 2):  # перебор клетор 3х3 с данной клеткой в центре
             for range_x in range(-1, 2):
                 if 0 <= self.start_coords[0] + range_x < 22 and 0 <= self.start_coords[1] + range_y < 22:
@@ -127,6 +130,15 @@ class Board:
 
                 if 0 <= self.finish_coords[0] + range_x < 22 and 0 <= self.finish_coords[1] + range_y < 22:
                     self.board[self.finish_coords[0] + range_x][self.finish_coords[1] + range_y] = 20
+
+    def set_and_paint_walls(self):
+        # припятствия - прямоугольники
+        # беруться: размер (length и height) и координаты левого верхнего угла (x, y) из рандомного числа
+        # припятствие примеряется на карте. Если границы фигуры выходят за карту, они обрезаются,
+        # если полностью находится внутри другой фигуры, или за границей карты - перерисовывается.
+        # Количество прямоугольников - пока неизвестно.
+        # В конце проверяется есть ли проход от точки старта к финишу, если да, то всё ок, если нет, переделать всё.
+        pass
 
 
 if __name__ == '__main__':
