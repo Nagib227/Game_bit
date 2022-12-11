@@ -12,7 +12,7 @@ def has_path(self, x1, y1, x2, y2):
                     continue
                 if x + dx < 0 or x + dx >= self.width or y + dy < 0 or y + dy >= self.height:
                     continue
-                if self.board[y + dy][x + dx] == 0:
+                if self.board[y + dy][x + dx] == 10:
                     dn = d.get((x + dx, y + dy), -1)
                     if dn == -1:
                         d[(x + dx, y + dy)] = d.get((x, y), -1) + 1

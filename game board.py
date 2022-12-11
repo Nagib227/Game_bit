@@ -1,30 +1,29 @@
 import pygame
 from datetime import datetime
+from Gauss_noize import GaussNoize
 
 
 class Board:
     # создание поля
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.board = [[0] * width for _ in range(height)]
-        self.seed = self.get_seed()
-        self.create_map()
+    def __init__(self, board_width, board_height):
+        self.width = board_width
+        self.height = board_height
         # значения по умолчанию
         self.left = 20
         self.top = 20
         self.cell_size = 30
 
+        self.seed = self.get_seed()
+        self.create_map()
     # настройка внешнего вида
     def set_view(self, left, top, cell_size):
         self.left = left
         self.top = top
         self.cell_size = cell_size
 
-    # 0 - клетки, по которым можно ходить
-    # 10 - клетки спавна
-    # 20 - клетки выхода
-    # 1 - клетки препятствий
+    # 0 - пустые клетки
+    # 1 - группа клеток по которым можно ходить: 10 - земля. 11 - клетки спавна. 12 - клетки выхода. 13 - середина тропы
+    # 20 - клетки стен. 21 - середина стены
 
     def render(self, screen):
         field = pygame.Surface((self.width * self.cell_size, self.height * self.cell_size))
@@ -33,15 +32,24 @@ class Board:
                 if self.board[j][i] == 0:
                     pygame.draw.rect(field, (255, 255, 255), (i * self.cell_size, j * self.cell_size,
                                                               self.cell_size, self.cell_size), 1)
-                elif self.board[j][i] == 10:
+                elif self.board[j][i] == 11:
                     pygame.draw.rect(field, (255, 255, 100), (i * self.cell_size, j * self.cell_size,
                                                               self.cell_size, self.cell_size), 0)
-                elif self.board[j][i] == 20:
+                elif self.board[j][i] == 12:
                     pygame.draw.rect(field, (255, 100, 100), (i * self.cell_size, j * self.cell_size,
                                                               self.cell_size, self.cell_size), 0)
+                elif self.board[j][i] == 10:
+                    pygame.draw.rect(field, (210, 210, 210), (i * self.cell_size, j * self.cell_size,
+                                                              self.cell_size, self.cell_size), 0)
 
-                elif self.board[j][i] == 1:
-                    pygame.draw.rect(field, (200, 200, 200), (i * self.cell_size, j * self.cell_size,
+                elif self.board[j][i] == 20:
+                    pygame.draw.rect(field, (100, 100, 100), (i * self.cell_size, j * self.cell_size,
+                                                              self.cell_size, self.cell_size), 0)
+                elif self.board[j][i] == 21:
+                    pygame.draw.rect(field, (90, 90, 90), (i * self.cell_size, j * self.cell_size,
+                                                        self.cell_size, self.cell_size), 0)
+                elif self.board[j][i] == 13:
+                    pygame.draw.rect(field, (220, 220, 220), (i * self.cell_size, j * self.cell_size,
                                                               self.cell_size, self.cell_size), 0)
 
         screen.blit(field, (self.left, self.top))
@@ -57,7 +65,7 @@ class Board:
     def on_click(self, cell_coords):
         if 0 <= cell_coords[0] < self.width and 0 <= cell_coords[1] < self.height:
             print(cell_coords)
-            self.board[cell_coords[1]][cell_coords[0]] = 1
+            self.board[cell_coords[1]][cell_coords[0]] = 20
         else:
             print('None')
 
@@ -81,11 +89,23 @@ class Board:
         return next_num
 
     def create_map(self):
+        self.board = [[0] * self.width for _ in range(self.height)]
         self.set_start_finish_points()
+        while True:
+            self.paint_start_finish_points()
+        # генерация стен с помощью шума Гауса
+            self.board = GaussNoize(self.board)
+
+            if self.has_path(self.start_coords[1], self.start_coords[0],
+                             self.finish_coords[1], self.finish_coords[0]):
+                break
+            self.board = [[0] * self.width for _ in range(self.height)]
 
     def set_start_finish_points(self):
         self.seed = self.randomize(self.seed)
         print(self.seed)
+
+        self.start_cells = []
         # чёт и чёт - верх
         # чёт и нечёт - право
         # нечёт и чёт - лево
@@ -120,25 +140,38 @@ class Board:
         elif start_pos == 'left':
             self.start_coords = (coord, 0)
             self.finish_coords = (coord2, self.width - 1)
-            self.paint_start_finish_points()
 
     def paint_start_finish_points(self):
         for range_y in range(-1, 2):  # перебор клетор 3х3 с данной клеткой в центре
             for range_x in range(-1, 2):
-                if 0 <= self.start_coords[0] + range_x < 22 and 0 <= self.start_coords[1] + range_y < 22:
-                    self.board[self.start_coords[0] + range_x][self.start_coords[1] + range_y] = 10
+                if 0 <= self.start_coords[0] + range_y < 22 and 0 <= self.start_coords[1] + range_x < 22:
+                    self.board[self.start_coords[0] + range_y][self.start_coords[1] + range_x] = 11
+                    self.start_cells.append((self.start_coords[0] + range_y, self.start_coords[1] + range_x))
 
-                if 0 <= self.finish_coords[0] + range_x < 22 and 0 <= self.finish_coords[1] + range_y < 22:
-                    self.board[self.finish_coords[0] + range_x][self.finish_coords[1] + range_y] = 20
+                if 0 <= self.finish_coords[0] + range_y < 22 and 0 <= self.finish_coords[1] + range_x < 22:
+                    self.board[self.finish_coords[0] + range_y][self.finish_coords[1] + range_x] = 12
 
-    def set_and_paint_walls(self):
-        # припятствия - прямоугольники
-        # беруться: размер (length и height) и координаты левого верхнего угла (x, y) из рандомного числа
-        # припятствие примеряется на карте. Если границы фигуры выходят за карту, они обрезаются,
-        # если полностью находится внутри другой фигуры, или за границей карты - перерисовывается.
-        # Количество прямоугольников - пока неизвестно.
-        # В конце проверяется есть ли проход от точки старта к финишу, если да, то всё ок, если нет, переделать всё.
-        pass
+    def has_path(self, x1, y1, x2, y2):
+        """Метод для определения доступности из клетки (x1, y1)
+         клетки (x2, y2) по волновому методу"""
+        # словарь расстояний
+        d = {(x1, y1): 0}
+        v = [(x1, y1)]
+        while len(v) > 0:
+            x, y = v.pop(0)
+            for dy in range(-1, 2):
+                for dx in range(-1, 2):
+                    if dx * dy != 0:
+                        continue
+                    if x + dx < 0 or x + dx >= self.width or y + dy < 0 or y + dy >= self.height:
+                        continue
+                    if self.board[y + dy][x + dx] in [10, 11, 12]:
+                        dn = d.get((x + dx, y + dy), -1)
+                        if dn == -1:
+                            d[(x + dx, y + dy)] = d.get((x, y), -1) + 1
+                            v.append((x + dx, y + dy))
+        dist = d.get((x2, y2), -1)
+        return dist >= 0
 
 
 if __name__ == '__main__':
