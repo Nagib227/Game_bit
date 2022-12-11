@@ -91,15 +91,24 @@ class Board:
     def create_map(self):
         self.board = [[0] * self.width for _ in range(self.height)]
         self.set_start_finish_points()
-        while True:
+        Done = False
+        while not Done:
+            Done = True
             self.paint_start_finish_points()
         # генерация стен с помощью шума Гауса
             self.board = GaussNoize(self.board)
 
-            if self.has_path(self.start_coords[1], self.start_coords[0],
-                             self.finish_coords[1], self.finish_coords[0]):
-                break
-            self.board = [[0] * self.width for _ in range(self.height)]
+            for x in range(self.height):
+                for y in range(self.width):
+                    if self.board[x][y] == 10:
+                        if not self.has_path(self.start_coords[1], self.start_coords[0], x, y):
+                            Done = False
+
+            if not self.has_path(self.start_coords[1], self.start_coords[0],
+                                 self.finish_coords[1], self.finish_coords[0]):
+                Done = False
+            if not Done:
+                self.board = [[0] * self.width for _ in range(self.height)]
 
     def set_start_finish_points(self):
         self.seed = self.randomize(self.seed)
@@ -165,7 +174,7 @@ class Board:
                         continue
                     if x + dx < 0 or x + dx >= self.width or y + dy < 0 or y + dy >= self.height:
                         continue
-                    if self.board[y + dy][x + dx] in [10, 11, 12]:
+                    if self.board[x + dx][y + dy] in [10, 11, 12]:
                         dn = d.get((x + dx, y + dy), -1)
                         if dn == -1:
                             d[(x + dx, y + dy)] = d.get((x, y), -1) + 1
