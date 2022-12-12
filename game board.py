@@ -100,13 +100,10 @@ class Board:
 
             for x in range(self.height):
                 for y in range(self.width):
-                    if self.board[x][y] == 10:
-                        if not self.has_path(self.start_coords[1], self.start_coords[0], x, y):
+                    if self.board[x][y] in [10, 12]:
+                        if not self.has_path(x, y, self.start_coords[1], self.start_coords[0]):
                             Done = False
 
-            if not self.has_path(self.start_coords[1], self.start_coords[0],
-                                 self.finish_coords[1], self.finish_coords[0]):
-                Done = False
             if not Done:
                 self.board = [[0] * self.width for _ in range(self.height)]
 
@@ -150,6 +147,8 @@ class Board:
             self.start_coords = (coord, 0)
             self.finish_coords = (coord2, self.width - 1)
 
+        print(self.start_coords, self.finish_coords)
+
     def paint_start_finish_points(self):
         for range_y in range(-1, 2):  # перебор клетор 3х3 с данной клеткой в центре
             for range_x in range(-1, 2):
@@ -168,8 +167,8 @@ class Board:
         v = [(x1, y1)]
         while len(v) > 0:
             x, y = v.pop(0)
-            for dy in range(-1, 2):
-                for dx in range(-1, 2):
+            for dx in range(-1, 2):
+                for dy in range(-1, 2):
                     if dx * dy != 0:
                         continue
                     if x + dx < 0 or x + dx >= self.width or y + dy < 0 or y + dy >= self.height:
