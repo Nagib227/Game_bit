@@ -1,5 +1,7 @@
 import pygame
 
+from Board import Board
+
 
 if __name__ == '__main__':
     time = 1000
@@ -10,13 +12,11 @@ if __name__ == '__main__':
     sc = pygame.display.set_mode(size)
     NOT_MOVE = pygame.USEREVENT + 1
     MOVE = pygame.USEREVENT + 2
-    # board = Board(s, s)
-    # board.set_view(10, 10, 25)
+    board = Board()
     clock = pygame.time.Clock()
     fps = 10
     move = False
     move_P = False
-    move_M = False
     end = True
     start = False
     running = True
@@ -27,9 +27,10 @@ if __name__ == '__main__':
             if event.type == NOT_MOVE:
                 move = True
                 move_P = True
-                move_M = True
                 start = True
                 print("Начало тайминга хода")
+                print("Ход Монсра")
+                board.move_monsters()
             if event.type == MOVE:
                 move = False
                 end = True
@@ -39,21 +40,22 @@ if __name__ == '__main__':
                     if move and move_P:
                         move_P = False
                         print("W")
+                        board.move_player(0, -1)
                 if event.key == pygame.K_s:
                     if move and move_P:
                         move_P = False
+                        board.move_player(0, 1)
                         print("S")
                 if event.key == pygame.K_a:
                     if move and move_P:
                         move_P = False
                         print("A")
+                        board.move_player(-1, 0)
                 if event.key == pygame.K_d:
                     if move and move_P:
                         move_P = False
                         print("D")
-        if move_M:
-            move_M = False
-            print("Ход Монсра")
+                        board.move_player(1, 0)
         if move and start:
             start = False
             pygame.time.set_timer(NOT_MOVE, 0)
@@ -63,6 +65,6 @@ if __name__ == '__main__':
             pygame.time.set_timer(MOVE, 0)
             pygame.time.set_timer(NOT_MOVE, time)
         sc.fill((0, 0, 0))
-        # board.render(sc)
+        board.render(sc)
         pygame.display.flip()
         clock.tick(fps)
