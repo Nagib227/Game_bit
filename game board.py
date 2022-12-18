@@ -98,11 +98,14 @@ class Board:
         # генерация стен с помощью шума Гауса
             self.board = GaussNoize(self.board)
 
-            for x in range(self.height):
-                for y in range(self.width):
-                    if self.board[x][y] in [10, 12]:
-                        if not self.has_path(x, y, self.start_coords[1], self.start_coords[0]):
-                            Done = False
+            # for x in range(self.height):
+            #     for y in range(self.width):
+            #         if self.board[x][y] in [10, 12]:
+            #             if not self.has_path(x, y, self.start_coords[1], self.start_coords[0]):
+            #                 Done = False
+
+            if not self.has_path(self.finish_coords[0], self.finish_coords[1], self.start_coords[0], self.start_coords[1]):
+                Done = False
 
             if not Done:
                 self.board = [[0] * self.width for _ in range(self.height)]
