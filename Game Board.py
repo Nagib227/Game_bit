@@ -15,15 +15,16 @@ class Board:
 
         self.seed = self.get_seed()
         self.create_map()
+        
     # настройка внешнего вида
-    def set_view(self, left, top, cell_size):
-        self.left = left
-        self.top = top
-        self.cell_size = cell_size
+    # def set_view(self, left, top, cell_size):
+    #     self.left = left
+    #     self.top = top
+    #     self.cell_size = cell_size
 
     # 0 - пустые клетки
-    # 1 - группа клеток по которым можно ходить: 10 - земля. 11 - клетки спавна. 12 - клетки выхода. 13 - середина тропы
-    # 20 - клетки стен. 21 - середина стены
+    # 1 - группа клеток по которым можно ходить: 10 - земля. 11 - клетки спавна. 12 - клетки выхода
+    # 20 - клетки стен
 
     def render(self, screen):
         field = pygame.Surface((self.width * self.cell_size, self.height * self.cell_size))
