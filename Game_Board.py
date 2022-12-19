@@ -11,7 +11,7 @@ class Board:
         # значения по умолчанию
         self.left = 20
         self.top = 20
-        self.cell_size = 30
+        self.cell_size = 10
 
         self.seed = self.get_seed()
         self.create_map()
@@ -27,14 +27,15 @@ class Board:
     # 20 - клетки стен
 
     def render(self, screen):
+
         field = pygame.Surface((self.width * self.cell_size, self.height * self.cell_size))
         for j in range(self.height):
             for i in range(self.width):
                 if self.board[j][i] == 0:
-                    pygame.draw.rect(field, (255, 255, 255), (i * self.cell_size, j * self.cell_size,
+                    pygame.draw.rect(field, (255, 0, 255), (i * self.cell_size, j * self.cell_size,
                                                               self.cell_size, self.cell_size), 1)
                 elif self.board[j][i] == 11:
-                    pygame.draw.rect(field, (255, 255, 100), (i * self.cell_size, j * self.cell_size,
+                    pygame.draw.rect(field, (255, 255, 0), (i * self.cell_size, j * self.cell_size,
                                                               self.cell_size, self.cell_size), 0)
                 elif self.board[j][i] == 12:
                     pygame.draw.rect(field, (255, 100, 100), (i * self.cell_size, j * self.cell_size,
@@ -45,12 +46,6 @@ class Board:
 
                 elif self.board[j][i] == 20:
                     pygame.draw.rect(field, (100, 100, 100), (i * self.cell_size, j * self.cell_size,
-                                                              self.cell_size, self.cell_size), 0)
-                elif self.board[j][i] == 21:
-                    pygame.draw.rect(field, (90, 90, 90), (i * self.cell_size, j * self.cell_size,
-                                                        self.cell_size, self.cell_size), 0)
-                elif self.board[j][i] == 13:
-                    pygame.draw.rect(field, (220, 220, 220), (i * self.cell_size, j * self.cell_size,
                                                               self.cell_size, self.cell_size), 0)
 
         screen.blit(field, (self.left, self.top))
@@ -110,6 +105,8 @@ class Board:
 
             if not Done:
                 self.board = [[0] * self.width for _ in range(self.height)]
+
+        print(self.board)
 
     def set_start_finish_points(self):
         self.seed = self.randomize(self.seed)
@@ -188,10 +185,11 @@ class Board:
 
 if __name__ == '__main__':
     pygame.init()
-    size = width, height = 701, 701
+    s = 22
+    size = width, height = s * 10 + 40, s * 10 + 40
     screen = pygame.display.set_mode(size)
 
-    board = Board(22, 22)
+    board = Board(s, s)
     running = True
     while running:
         for event in pygame.event.get():

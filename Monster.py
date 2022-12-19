@@ -22,9 +22,9 @@ class Monster:
 
     def set_move(self, move):
         if move == "up":
-            self.y += self.speed
-        if move == "down":
             self.y -= self.speed
+        if move == "down":
+            self.y += self.speed
         if move == "left":
             self.x -= self.speed
         if move == "right":
@@ -65,9 +65,9 @@ class Monster:
             weight -= 1
             if y > 0 and pathArr[y - 1][x] == weight:
                 y -= 1
-                result[weight] = 'up'
-            elif y < (len(pathArr) - 1) and pathArr[y + 1][x] == weight:
                 result[weight] = 'down'
+            elif y < (len(pathArr) - 1) and pathArr[y + 1][x] == weight:
+                result[weight] = 'up'
                 y += 1
             elif x > 0 and pathArr[y][x - 1] == weight:
                 result[weight] = 'right'
