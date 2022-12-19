@@ -1,10 +1,11 @@
 class Monster:
-    def __init__(self, x, y, hp, speed, damage, lyt, exp):
+    def __init__(self, x, y, hp, speed, damage, field_view, lyt, exp):
         self.hp = hp
         self.speed = speed
         self.damage = damage
         self.x = x
         self.y = y
+        self.field_view = field_view
         self.lyt = lyt
         self.exp = exp
 
@@ -14,6 +15,9 @@ class Monster:
     def set_hp(self, hp):
         self.hp = hp
 
+    def get_field_view(self):
+        return self.field_view
+
     def get_speed(self):
         return self.speed
 
@@ -22,13 +26,13 @@ class Monster:
 
     def set_move(self, move):
         if move == "up":
-            self.y -= self.speed
+            self.y -= 1
         if move == "down":
-            self.y += self.speed
+            self.y += 1
         if move == "left":
-            self.x -= self.speed
+            self.x -= 1
         if move == "right":
-            self.x += self.speed
+            self.x += 1
 
     def get_damage(self):
         return self.damage
@@ -90,3 +94,22 @@ class Monster:
             return None
         res = self.printPath(path, pozOut)
         return res
+
+    def can_move(self, coord_pl, field):
+        d = {(self.x, self.y)[::-1]: 0}
+        v = [(self.x, self.y)[::-1]]
+        while len(v) > 0:
+            x, y = v.pop(0)
+            for dx in range(-1, 2):
+                for dy in range(-1, 2):
+                    if dx * dy != 0:
+                        continue
+                    if x + dx < 0 or x + dx >= len(field[0]) or y + dy < 0 or y + dy >= len(field):
+                        continue
+                    if field[x + dx][y + dy] in [0]:
+                        dn = d.get((x + dx, y + dy), -1)
+                        if dn == -1:
+                            d[(x + dx, y + dy)] = d.get((x, y), -1) + 1
+                            v.append((x + dx, y + dy))
+        dist = d.get(coord_pl[::-1], -1)
+        return -1 < dist <= self.field_view

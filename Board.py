@@ -1,7 +1,7 @@
 import pygame
 
 from Player import Player
-from Monster import Monster
+from Monster_speed import Monster_speed
 
 
 class Board:
@@ -19,7 +19,7 @@ class Board:
                       [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                       [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
         self.key = 0
-        self.monsters = [Monster(9, 9, 1, 1, 1, [1, 2], 10)]
+        self.monsters = [Monster_speed(4, 4)]
         self.items = []
         self.player = Player(1, 1, 3)
         self.left = 10
@@ -52,11 +52,11 @@ class Board:
 
     def move_monsters(self):
         for i in self.monsters:
+            if not i.can_move(self.player.get_coord(), self.board):
+                continue
             move = i.move(self.player.get_coord(), self.board)
-            print(move)
             if move:
-                i.set_move(move[0])
-
-    def move(self, obj, x, y):
-        current_x, current_y = obj.get_coord()
-        obj.set_coord(current_y + )
+                for j in range(i.get_speed()):
+                    if not move:
+                        break
+                    i.set_move(move.pop(0))
