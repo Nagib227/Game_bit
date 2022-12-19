@@ -17,6 +17,19 @@ class Monster:
     def get_speed(self):
         return self.speed
 
+    def get_coord(self):
+        return self.x, self.y
+
+    def set_move(self, move):
+        if move == "up":
+            self.y += self.speed
+        if move == "down":
+            self.y -= self.speed
+        if move == "left":
+            self.x -= self.speed
+        if move == "right":
+            self.x += self.speed
+
     def get_damage(self):
         return self.damage
 
@@ -52,9 +65,9 @@ class Monster:
             weight -= 1
             if y > 0 and pathArr[y - 1][x] == weight:
                 y -= 1
-                result[weight] = 'down'
-            elif y < (len(pathArr) - 1) and pathArr[y + 1][x] == weight:
                 result[weight] = 'up'
+            elif y < (len(pathArr) - 1) and pathArr[y + 1][x] == weight:
+                result[weight] = 'down'
                 y += 1
             elif x > 0 and pathArr[y][x - 1] == weight:
                 result[weight] = 'right'
@@ -66,7 +79,8 @@ class Monster:
         return result[1:]
 
     def move(self, pozOut, filed):
-        pozIn = (self.x, self.y)
+        pozIn = (self.x, self.y)[::-1]
+        pozOut = pozOut[::-1]
         labirint = []
         for i in filed:
             labirint.append(i[:])
@@ -74,5 +88,5 @@ class Monster:
         path[pozIn[0]][pozIn[1]] = 1
         if not self.found(path, pozOut):
             return None
-        result = self.printPath(path, pozOut)
-        return result
+        res = self.printPath(path, pozOut)
+        return res
