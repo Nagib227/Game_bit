@@ -12,8 +12,8 @@ class Monster:
     def get_hp(self):
         return self.hp
 
-    def set_hp(self, hp):
-        self.hp = hp
+    def set_hp(self, damage):
+        self.hp -= damage
 
     def get_field_view(self):
         return self.field_view

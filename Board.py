@@ -80,6 +80,8 @@ class Board:
 
     def interact_items(self):
         for i in self.items:
+            if not any(i.get_coord()):
+                continue
             if abs(i.get_coord()[0] - self.player.get_coord()[0]) <= 1 and\
                abs(i.get_coord()[1] - self.player.get_coord()[1]) <= 1:
                 print(self.player.chang_weapon(i))
@@ -94,7 +96,10 @@ class Board:
             return None
         for i in self.monsters:
             if i.get_coord() == cell:
-                print("!!!!!!")
+                i.set_hp(weapon.get_damage())
+                if i.get_hp() <= 0:
+                    self.monsters.pop(self.monsters.index(i))
+                return None
 
     def get_cell(self, m_pos):
         x, y = m_pos
