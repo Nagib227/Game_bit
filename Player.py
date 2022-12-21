@@ -4,7 +4,7 @@ class Player:
         self.y = y
         self.key = 0
         self.hp = hp
-        self.active = None
+        self.active_weapon = None
         self.inventory = []
 
     def set_coord(self, x, y):
@@ -14,18 +14,16 @@ class Player:
     def get_coord(self):
         return self.x, self.y
 
-    def add_weapon(self, weapon):
-        if weapon in self.inventory:
-            return None
-        self.active = weapon
-        self.inventory.append(weapon)
+    def chang_weapon(self, weapon):
+        old = self.active_weapon
+        self.active_weapon = weapon
+        return old
 
-    def chang_weapon(self, index):
-        self.active = self.inventory[index]
+    def get_weapon(self):
+        return self.active_weapon
 
-    def find_weapon(self, weapon):
-        if weapon in self.inventory:
-            return self.inventory.index(weapon)
+    def damage(self, damage):
+        self.hp -= damage
 
     def heal(self):
         return self.hp

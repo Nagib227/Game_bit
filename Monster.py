@@ -80,7 +80,7 @@ class Monster:
                 result[weight] = 'left'
                 x += 1
 
-        return result[1:]
+        return result[1:-1]
 
     def move(self, pozOut, filed):
         pozIn = (self.x, self.y)[::-1]

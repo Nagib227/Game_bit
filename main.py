@@ -35,6 +35,7 @@ if __name__ == '__main__':
                 move = False
                 end = True
                 print("Конец тайминга хода")
+                board.interact_monsters()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w:
                     if move and move_P:
@@ -56,6 +57,15 @@ if __name__ == '__main__':
                         move_P = False
                         print("D")
                         board.move_player(1, 0)
+                if event.key == pygame.K_e:
+                    print("E")
+                    board.interact_items()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    if move and move_P:
+                        move_P = False
+                        print("atack")
+                        board.atack(event.pos)
         if move and start:
             start = False
             pygame.time.set_timer(NOT_MOVE, 0)

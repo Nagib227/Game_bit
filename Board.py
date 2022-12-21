@@ -1,5 +1,8 @@
 import pygame
 
+from END import END
+
+from Sword import Sword
 from Player import Player
 from Monster_speed import Monster_speed
 
@@ -18,9 +21,8 @@ class Board:
                       [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                       [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                       [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-        self.key = 0
         self.monsters = [Monster_speed(4, 4)]
-        self.items = []
+        self.items = [Sword(1, 0)]
         self.player = Player(1, 1, 3)
         self.left = 10
         self.top = 10
@@ -43,6 +45,12 @@ class Board:
             x = self.cell_size * i.get_coord()[0] + self.left
             y = self.cell_size * i.get_coord()[1] + self.top
             pygame.draw.rect(sc, (255, 0, 0), ((x, y), (self.cell_size, self.cell_size)))
+        for i in self.items:
+            if not any(i.get_coord()):
+                continue
+            x = self.cell_size * i.get_coord()[0] + self.left
+            y = self.cell_size * i.get_coord()[1] + self.top
+            pygame.draw.rect(sc, (0, 255, 0), ((x, y), (self.cell_size, self.cell_size)))
 
     def move_player(self, x, y):
         x = self.player.get_coord()[0] + x
@@ -60,3 +68,40 @@ class Board:
                     if not move:
                         break
                     i.set_move(move.pop(0))
+
+    def interact_monsters(self):
+        for i in self.monsters:
+            if abs(i.get_coord()[0] - self.player.get_coord()[0]) <= 1 and\
+               abs(i.get_coord()[1] - self.player.get_coord()[1]) <= 1:
+                self.player.damage(i.get_damage())
+                print(self.player.heal())
+                if self.player.heal() <= 0:
+                    END()
+
+    def interact_items(self):
+        for i in self.items:
+            if abs(i.get_coord()[0] - self.player.get_coord()[0]) <= 1 and\
+               abs(i.get_coord()[1] - self.player.get_coord()[1]) <= 1:
+                print(self.player.chang_weapon(i))
+                i.set_coord(None, None)
+
+    def atack(self, pos):
+        weapon = self.player.get_weapon()
+        if not weapon:
+            return None
+        cell = self.get_cell(pos)
+        if not weapon.can_atack(self.player.get_coord(), cell):
+            return None
+        for i in self.monsters:
+            if i.get_coord() == cell:
+                print("!!!!!!")
+
+    def get_cell(self, m_pos):
+        x, y = m_pos
+        if not self.left < x < self.left + self.width * self.cell_size:
+            return None
+        if not self.top < y < self.top + self.height * self.cell_size:
+            return None
+        cell = ((x - self.left) // self.cell_size,
+                (y - self.top) // self.cell_size)
+        return cell
