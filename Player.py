@@ -1,5 +1,5 @@
 class Player:
-    def __init__(self, x, y, hp):
+    def __init__(self, x, y, hp=3):
         self.x = x
         self.y = y
         self.key = 0

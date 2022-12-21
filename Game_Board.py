@@ -2,6 +2,12 @@ import pygame
 from datetime import datetime
 from Gauss_noize import GaussNoize
 
+from Player import Player
+from Monster import Monster
+from Monster_speed import Monster_speed
+
+from END import END
+
 
 class Board:
     # создание поля
@@ -33,10 +39,10 @@ class Board:
             for i in range(self.width):
                 if self.board[j][i] == 0:
                     pygame.draw.rect(field, (255, 0, 255), (i * self.cell_size, j * self.cell_size,
-                                                              self.cell_size, self.cell_size), 1)
+                                                            self.cell_size, self.cell_size), 1)
                 elif self.board[j][i] == 11:
                     pygame.draw.rect(field, (255, 255, 0), (i * self.cell_size, j * self.cell_size,
-                                                              self.cell_size, self.cell_size), 0)
+                                                            self.cell_size, self.cell_size), 0)
                 elif self.board[j][i] == 12:
                     pygame.draw.rect(field, (255, 100, 100), (i * self.cell_size, j * self.cell_size,
                                                               self.cell_size, self.cell_size), 0)
@@ -50,20 +56,20 @@ class Board:
 
         screen.blit(field, (self.left, self.top))
 
-    def get_click(self, mouse_pos):
-        cell_coords = self.get_cell(mouse_pos)
-        self.on_click(cell_coords)
+    # def get_click(self, mouse_pos):
+    #     cell_coords = self.get_cell(mouse_pos)
+    #     self.on_click(cell_coords)
 
     def get_cell(self, mouse_pos):
         coords = ((mouse_pos[0] - self.left) // self.cell_size, (mouse_pos[1] - self.left) // self.cell_size)
         return coords
 
-    def on_click(self, cell_coords):
-        if 0 <= cell_coords[0] < self.width and 0 <= cell_coords[1] < self.height:
-            print(cell_coords)
-            self.board[cell_coords[1]][cell_coords[0]] = 20
-        else:
-            print('None')
+    # def on_click(self, cell_coords):
+    #     if 0 <= cell_coords[0] < self.width and 0 <= cell_coords[1] < self.height:
+    #         print(cell_coords)
+    #         self.board[cell_coords[1]][cell_coords[0]] = 20
+    #     else:
+    #         print('None')
 
     # cоздание случайной карты
     def get_seed(self):
@@ -105,6 +111,7 @@ class Board:
 
             if not Done:
                 self.board = [[0] * self.width for _ in range(self.height)]
+        self.set_entities()
 
         print(self.board)
 
@@ -159,6 +166,70 @@ class Board:
 
                 if 0 <= self.finish_coords[0] + range_y < 22 and 0 <= self.finish_coords[1] + range_x < 22:
                     self.board[self.finish_coords[0] + range_y][self.finish_coords[1] + range_x] = 12
+    # cоздание случайной карты
+
+    # размещение сущностей
+    def set_entities(self):
+        self.player = Player(self.start_coords[0], self.start_coords[1])
+        self.all_monsters =
+
+    def move(self, entity, x, y):  # entity - сущность(игрок, монстр) (взято из майнкрафта)
+        entity.x += x
+        entity.y += y
+
+    def move_player(self, x, y):
+        x = self.player.get_coord()[0] + x
+        y = self.player.get_coord()[1] + y
+        if 0 <= x < self.width and 0 <= y < self.height and self.board[y][x] == 0:
+            self.player.set_coord(x, y)
+
+    def move_monsters(self):
+        for i in self.monsters:
+            if not i.can_move(self.player.get_coord(), self.board):
+                continue
+            move = i.move(self.player.get_coord(), self.board)
+            if move:
+                for j in range(i.get_speed()):
+                    if not move:
+                        break
+                    i.set_move(move.pop(0))
+
+    def interact_monsters(self):
+        for i in self.monsters:
+            if abs(i.get_coord()[0] - self.player.get_coord()[0]) <= 1 and \
+                    abs(i.get_coord()[1] - self.player.get_coord()[1]) <= 1:
+                self.player.damage(i.get_damage())
+                print(self.player.heal())
+                if self.player.heal() <= 0:
+                    END()
+
+    def interact_items(self):
+        for i in self.items:
+            if not any(i.get_coord()):
+                continue
+            if abs(i.get_coord()[0] - self.player.get_coord()[0]) <= 1 and \
+                    abs(i.get_coord()[1] - self.player.get_coord()[1]) <= 1:
+                old = self.player.chang_weapon(i)
+                x, y = i.get_coord()
+                i.set_coord(None, None)
+                if old:
+                    old.set_coord(x, y)
+
+    def attack(self, pos):
+        weapon = self.player.get_weapon()
+        if not weapon:
+            return None
+        cell = self.get_cell(pos)
+        print(weapon.can_atack(self.player.get_coord(), cell, self.board))
+        if not weapon.can_atack(self.player.get_coord(), cell, self.board):
+            return None
+        for i in self.monsters:
+            if i.get_coord() == cell:
+                i.set_hp(weapon.get_damage())
+                if i.get_hp() <= 0:
+                    self.monsters.pop(self.monsters.index(i))
+                return None
+
 
     def has_path(self, x1, y1, x2, y2):
         """Метод для определения доступности из клетки (x1, y1)

@@ -1,5 +1,6 @@
 class Monster:
-    def __init__(self, x, y, hp, speed, damage, field_view, lyt, exp):
+    def __init__(self, x, y, hp=2, speed=1, damage=1, field_view=5, lyt=None, exp=5):
+        # чтобы не приходилось вводить всё каждый раз + если создавать особенного монстра, чтобы было понятно что где
         self.hp = hp
         self.speed = speed
         self.damage = damage

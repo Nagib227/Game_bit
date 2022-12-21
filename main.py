@@ -1,7 +1,7 @@
 import pygame
 
 from END import END
-from Board import Board
+from Game_Board import Board
 
 
 if __name__ == '__main__':
@@ -67,7 +67,7 @@ if __name__ == '__main__':
                     if move and move_P:
                         move_P = False
                         print("atack")
-                        board.atack(event.pos)
+                        board.attack(event.pos)
         if move and start:
             start = False
             pygame.time.set_timer(NOT_MOVE, 0)
