@@ -1,5 +1,6 @@
 import pygame
 
+from END import END
 from Board import Board
 
 
@@ -24,6 +25,7 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+                END() # !!!!!!!!!!!!!!
             if event.type == NOT_MOVE:
                 move = True
                 move_P = True

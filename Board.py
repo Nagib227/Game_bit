@@ -14,7 +14,7 @@ class Board:
         self.board = [[1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
                       [1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
                       [1, 0, 0, 0, 0, 1, 0, 1, 0, 0],
-                      [1, 0, 1, 1, 1, 1, 1, 1, 0, 0],
+                      [1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
                       [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                       [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                       [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -22,8 +22,8 @@ class Board:
                       [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                       [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
         self.monsters = [Monster_speed(4, 4)]
-        self.items = [Sword(1, 0)]
-        self.player = Player(1, 1, 3)
+        self.items = [Sword(2, 0)]
+        self.player = Player(1, 0, 3)
         self.left = 10
         self.top = 10
         self.cell_size = 25
@@ -84,15 +84,20 @@ class Board:
                 continue
             if abs(i.get_coord()[0] - self.player.get_coord()[0]) <= 1 and\
                abs(i.get_coord()[1] - self.player.get_coord()[1]) <= 1:
-                print(self.player.chang_weapon(i))
+                old = self.player.chang_weapon(i)
+                x, y = i.get_coord()
                 i.set_coord(None, None)
+                if old:
+                    old.set_coord(x, y)
+                
 
     def atack(self, pos):
         weapon = self.player.get_weapon()
         if not weapon:
             return None
         cell = self.get_cell(pos)
-        if not weapon.can_atack(self.player.get_coord(), cell):
+        print(weapon.can_atack(self.player.get_coord(), cell, self.board))
+        if not weapon.can_atack(self.player.get_coord(), cell, self.board):
             return None
         for i in self.monsters:
             if i.get_coord() == cell:
