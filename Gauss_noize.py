@@ -2,8 +2,8 @@ from PIL import Image, ImageDraw, ImageFilter
 from random import *
 
 
-def GaussNoize(board):
-	im1 = Image.new("RGB", (22, 22))
+def GaussNoize(board, width):
+	im1 = Image.new("RGB", (width, width))
 	draw = ImageDraw.Draw(im1)
 	width = im1.size[0]
 	height = im1.size[1]
@@ -21,8 +21,6 @@ def GaussNoize(board):
 	for x in range(width):
 		for y in range(height):
 			r = pix[x, y][0]
-			g = pix[x, y][1]
-			b = pix[x, y][2]
 
 			if r > 127:
 				cell = 10

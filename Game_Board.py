@@ -96,7 +96,7 @@ class Board:
         num3 += '0' * int(num[-8: -6])
         next_num = str(sum([int(num1, 2), int(num2, 2), int(num3, 2)]))[:21]
         if num == next_num:
-            next_num = self.randomize(num + '011000')
+            next_num = self.randomize(num + '01100000000')
         return next_num
 
     def create_map(self):
@@ -107,13 +107,16 @@ class Board:
             Done = True
             self.paint_start_finish_points()
         # генерация стен с помощью шума Гауса
-            self.board = GaussNoize(self.board)
+            self.board = GaussNoize(self.board, self.width)
 
             for x in range(self.height):
                 for y in range(self.width):
                     if self.board[x][y] in [10, 12]:
                         if not self.has_path(x, y, self.start_coords[1], self.start_coords[0]):
                             Done = False
+                            break
+                if not Done:
+                    break
 
             if not self.has_path(self.finish_coords[0], self.finish_coords[1], self.start_coords[0], self.start_coords[1]):
                 Done = False
@@ -122,7 +125,7 @@ class Board:
                 self.board = [[0] * self.width for _ in range(self.height)]
         self.set_entities()
 
-        for i in range(22):
+        for i in range(self.width):
             print(i, self.board[i])
 
     def set_start_finish_points(self):
@@ -170,11 +173,11 @@ class Board:
     def paint_start_finish_points(self):
         for range_y in range(-1, 2):  # перебор клетор 3х3 с данной клеткой в центре
             for range_x in range(-1, 2):
-                if 0 <= self.start_coords[0] + range_y < 22 and 0 <= self.start_coords[1] + range_x < 22:
+                if 0 <= self.start_coords[0] + range_y < self.width and 0 <= self.start_coords[1] + range_x < self.height:
                     self.board[self.start_coords[0] + range_y][self.start_coords[1] + range_x] = 11
                     self.start_cells.append((self.start_coords[0] + range_y, self.start_coords[1] + range_x))
 
-                if 0 <= self.finish_coords[0] + range_y < 22 and 0 <= self.finish_coords[1] + range_x < 22:
+                if 0 <= self.finish_coords[0] + range_y < self.width and 0 <= self.finish_coords[1] + range_x < self.height:
                     self.board[self.finish_coords[0] + range_y][self.finish_coords[1] + range_x] = 12
     # cоздание случайной карты
 
@@ -296,7 +299,7 @@ class Board:
 
 if __name__ == '__main__':
     pygame.init()
-    s = 22
+    s = 15
     size = width, height = s * 30 + 40, s * 30 + 40
     screen = pygame.display.set_mode(size)
 
