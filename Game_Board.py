@@ -2,8 +2,6 @@ import pygame
 from datetime import datetime
 from Gauss_noize import GaussNoize
 
-from pprint import pprint
-
 from Player import Player
 from Monster import Monster
 from Monster_speed import Monster_speed
