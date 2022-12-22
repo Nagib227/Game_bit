@@ -2,6 +2,8 @@ import pygame
 from datetime import datetime
 from Gauss_noize import GaussNoize
 
+from pprint import pprint
+
 from Player import Player
 from Monster import Monster
 from Monster_speed import Monster_speed
@@ -17,7 +19,7 @@ class Board:
         # значения по умолчанию
         self.left = 20
         self.top = 20
-        self.cell_size = 10
+        self.cell_size = 30
 
         self.seed = self.get_seed()
         self.create_map()
@@ -53,12 +55,19 @@ class Board:
                 elif self.board[j][i] == 20:
                     pygame.draw.rect(field, (100, 100, 100), (i * self.cell_size, j * self.cell_size,
                                                               self.cell_size, self.cell_size), 0)
+                for monster in self.monsters:
+                    pygame.draw.rect(field, (0, 0, 0), (monster.y * self.cell_size, monster.x * self.cell_size,
+                                                        self.cell_size, self.cell_size), 0)
+
+                pygame.draw.rect(field, (0, 255, 0), (self.player.y * self.cell_size, self.player.x * self.cell_size,
+                                                      self.cell_size, self.cell_size), 0)
 
         screen.blit(field, (self.left, self.top))
 
-    # def get_click(self, mouse_pos):
-    #     cell_coords = self.get_cell(mouse_pos)
-    #     self.on_click(cell_coords)
+    def get_click(self, mouse_pos):
+        cell_coords = self.get_cell(mouse_pos)
+        print(cell_coords)
+        # self.on_click(cell_coords)
 
     def get_cell(self, mouse_pos):
         coords = ((mouse_pos[0] - self.left) // self.cell_size, (mouse_pos[1] - self.left) // self.cell_size)
@@ -87,7 +96,9 @@ class Board:
         num3 = num2 = str(num1)
         num2 += '0' * int(num[-5])
         num3 += '0' * int(num[-8: -6])
-        next_num = str(sum([int(num1, 2), int(num2, 2), int(num3, 2)]))[:20]
+        next_num = str(sum([int(num1, 2), int(num2, 2), int(num3, 2)]))[:21]
+        if num == next_num:
+            next_num = self.randomize(num + '011000')
         return next_num
 
     def create_map(self):
@@ -100,11 +111,11 @@ class Board:
         # генерация стен с помощью шума Гауса
             self.board = GaussNoize(self.board)
 
-            # for x in range(self.height):
-            #     for y in range(self.width):
-            #         if self.board[x][y] in [10, 12]:
-            #             if not self.has_path(x, y, self.start_coords[1], self.start_coords[0]):
-            #                 Done = False
+            for x in range(self.height):
+                for y in range(self.width):
+                    if self.board[x][y] in [10, 12]:
+                        if not self.has_path(x, y, self.start_coords[1], self.start_coords[0]):
+                            Done = False
 
             if not self.has_path(self.finish_coords[0], self.finish_coords[1], self.start_coords[0], self.start_coords[1]):
                 Done = False
@@ -113,7 +124,8 @@ class Board:
                 self.board = [[0] * self.width for _ in range(self.height)]
         self.set_entities()
 
-        print(self.board)
+        for i in range(22):
+            print(i, self.board[i])
 
     def set_start_finish_points(self):
         self.seed = self.randomize(self.seed)
@@ -171,11 +183,41 @@ class Board:
     # размещение сущностей
     def set_entities(self):
         self.player = Player(self.start_coords[0], self.start_coords[1])
-        self.all_monsters =
 
-    def move(self, entity, x, y):  # entity - сущность(игрок, монстр) (взято из майнкрафта)
-        entity.x += x
-        entity.y += y
+
+        all_monsters = []
+        to_check = []
+        for i in range(10):
+            Right_pos = False  # цикл создающий и располагающий монстров
+            while not Right_pos:  # цикл, который проверяет правильность расположения монстров
+                Right_pos = True
+                self.seed = self.randomize(self.seed)
+                print(self.seed)
+
+                coord = sum([int(i) for i in self.seed[11:14]])
+                coord2 = sum([int(i) for i in self.seed[5:8]])
+                print(coord, coord2)
+                while coord >= self.width:
+                    coord -= 15
+                while coord2 >= self.height:
+                    coord2 -= 15
+                print(coord, coord2)
+                if self.has_path(coord2, coord, self.start_coords[1], self.start_coords[0]) or\
+                        (coord, coord2) in to_check or self.board[coord][coord2] == 20:
+                    Right_pos = False
+
+            to_check.append((coord, coord2))
+            if i > 4:
+                monster = Monster_speed(coord, coord2)
+            else:
+                monster = Monster(coord, coord2)
+            all_monsters.append(monster)
+
+        self.monsters = all_monsters
+
+    # def move(self, entity, x, y):  # entity - сущность(игрок, монстр) (взято из майнкрафта)
+    #     entity.x += x
+    #     entity.y += y
 
     def move_player(self, x, y):
         x = self.player.get_coord()[0] + x
@@ -257,7 +299,7 @@ class Board:
 if __name__ == '__main__':
     pygame.init()
     s = 22
-    size = width, height = s * 10 + 40, s * 10 + 40
+    size = width, height = s * 30 + 40, s * 30 + 40
     screen = pygame.display.set_mode(size)
 
     board = Board(s, s)
