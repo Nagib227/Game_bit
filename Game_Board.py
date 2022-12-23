@@ -212,10 +212,10 @@ class Board:
                     Right_pos = False
 
             to_check.append((coord, coord2))
-            if i > 4 and False: # Монстр видет на 50 клеток
+            if i > 4: 
                 monster = Monster_speed(coord, coord2)
             else:
-                monster = Monster(coord, coord2, field_view=50)
+                monster = Monster(coord, coord2)
             all_monsters.append(monster)
 
         self.monsters = all_monsters
@@ -227,9 +227,13 @@ class Board:
     def move_player(self, x, y):
         x = self.player.get_coord()[0] + x
         y = self.player.get_coord()[1] + y
-        print(self.board[x][y])
+        for i in self.monsters:
+            if i.x == x and i.y == y:
+                return None
+        for i in self.items:
+            if i.x == x and i.y == y and i.__class__.__name__ == "Chest":
+                return None
         if 0 <= x < self.width and 0 <= y < self.height and self.board[x][y] in [10, 11, 12]:
-
             self.player.set_coord(x, y)
 
     def move_monsters(self):
