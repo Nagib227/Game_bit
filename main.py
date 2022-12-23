@@ -67,7 +67,7 @@ if __name__ == '__main__':
                 if event.button == 1:
                     if move and move_P:
                         move_P = False
-                        print("attack")  # ATTACK!!!!!!!!!!!!!!!!!!
+                        print("attack") # ATTACK!!!!!!!!!!!!!!!!!!
                         board.attack(event.pos)
         if move and start:
             start = False

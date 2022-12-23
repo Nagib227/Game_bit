@@ -5,6 +5,7 @@ from Gauss_noize import GaussNoize
 from Player import Player
 from Monster import Monster
 from Monster_speed import Monster_speed
+from Sword import Sword
 
 from END import END
 
@@ -21,8 +22,6 @@ class Board:
 
         self.seed = self.get_seed()
         self.create_map()
-
-        self.items = []
         
     # настройка внешнего вида
     # def set_view(self, left, top, cell_size):
@@ -35,7 +34,6 @@ class Board:
     # 20 - клетки стен
 
     def render(self, screen):
-
         field = pygame.Surface((self.width * self.cell_size, self.height * self.cell_size))
         for j in range(self.height):
             for i in range(self.width):
@@ -51,12 +49,16 @@ class Board:
                 elif self.board[j][i] == 10:
                     pygame.draw.rect(field, (210, 210, 210), (i * self.cell_size, j * self.cell_size,
                                                               self.cell_size, self.cell_size), 0)
-
                 elif self.board[j][i] == 20:
                     pygame.draw.rect(field, (100, 100, 100), (i * self.cell_size, j * self.cell_size,
                                                               self.cell_size, self.cell_size), 0)
                 for monster in self.monsters:
                     pygame.draw.rect(field, (0, 0, 0), (monster.y * self.cell_size, monster.x * self.cell_size,
+                                                        self.cell_size, self.cell_size), 0)
+                for item in self.items:
+                    if not all(item.get_coord()):
+                        continue
+                    pygame.draw.rect(field, (255, 255, 255), (item.y * self.cell_size, item.x * self.cell_size,
                                                         self.cell_size, self.cell_size), 0)
 
                 pygame.draw.rect(field, (0, 255, 0), (self.player.y * self.cell_size, self.player.x * self.cell_size,
@@ -195,16 +197,12 @@ class Board:
             while not Right_pos:  # цикл, который проверяет правильность расположения монстров
                 Right_pos = True
                 self.seed = self.randomize(self.seed)
-                print(self.seed)
-
                 coord = sum([int(i) for i in self.seed[11:14]])
                 coord2 = sum([int(i) for i in self.seed[5:8]])
-                print(coord, coord2)
                 while coord >= self.width:
                     coord -= 15
                 while coord2 >= self.height:
                     coord2 -= 15
-                print(coord, coord2)
                 # if self.has_path(coord2, coord, self.start_coords[1], self.start_coords[0]) or\
                 #         (coord, coord2) in to_check or self.board[coord][coord2] == 20:
 
@@ -219,6 +217,10 @@ class Board:
             all_monsters.append(monster)
 
         self.monsters = all_monsters
+        if self.start_coords[1] in [0, self.width - 1]:
+            self.items = [Sword(self.start_coords[0], self.start_coords[1] + 1)]
+        if self.start_coords[0] in [0, self.height - 1]:
+            self.items = [Sword(self.start_coords[0] + 1, self.start_coords[1])]
 
     # def move(self, entity, x, y):  # entity - сущность(игрок, монстр) (взято из майнкрафта)
     #     entity.x += x
@@ -261,7 +263,7 @@ class Board:
 
     def interact_items(self):
         for i in self.items:
-            if not any(i.get_coord()):
+            if not all(i.get_coord()):
                 continue
             if abs(i.get_coord()[0] - self.player.get_coord()[0]) <= 1 and \
                     abs(i.get_coord()[1] - self.player.get_coord()[1]) <= 1:
@@ -276,12 +278,14 @@ class Board:
         if not weapon:
             return None
         cell = self.get_cell(pos)
-        print(weapon.can_atack(self.player.get_coord(), cell, self.board))
-        if not weapon.can_atack(self.player.get_coord(), cell, self.board):
+        print(weapon.can_atack(self.player.get_coord(), cell, self.board, self.items), "###############################")
+        # raise Exception('I know Python!')
+        if not weapon.can_atack(self.player.get_coord(), cell, self.board, self.items):
             return None
         for i in self.monsters:
             if i.get_coord() == cell:
                 i.set_hp(weapon.get_damage())
+                print(i.get_hp())
                 if i.get_hp() <= 0:
                     self.monsters.pop(self.monsters.index(i))
                 return None

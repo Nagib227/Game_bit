@@ -92,7 +92,8 @@ class Monster:
         for i in monsters:
             path[i.x][i.y] = -1
         for i in items:
-            path[i.x][i.y] = -1
+            if i.__class__.__name__ == "Chest":
+                path[i.x][i.y] = -1
         path[pozIn[0]][pozIn[1]] = 1
         if not self.found(path, pozOut):
             return None
