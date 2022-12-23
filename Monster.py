@@ -1,5 +1,5 @@
 class Monster:
-    def __init__(self, x, y, hp=2, speed=1, damage=1, field_view=5, lyt=None, exp=5):
+    def __init__(self, x, y, hp=2, speed=1, damage=1, field_view=5, loot=None, exp=5, time_move=2):
         # чтобы не приходилось вводить всё каждый раз + если создавать особенного монстра, чтобы было понятно что где
         self.hp = hp
         self.speed = speed
@@ -7,8 +7,9 @@ class Monster:
         self.x = x
         self.y = y
         self.field_view = field_view
-        self.lyt = lyt
+        self.loot = loot
         self.exp = exp
+        self.timing_move = (time_move, 0)  # [0] - частота хода, [1] - текущий ход
 
     def get_hp(self):
         return self.hp
@@ -38,8 +39,8 @@ class Monster:
     def get_damage(self):
         return self.damage
 
-    def get_lyt(self):
-        return self.lyt
+    def get_loot(self):
+        return self.loot
 
     def found(self, pathArr, finPoint):
         weight = 1
@@ -83,13 +84,14 @@ class Monster:
 
         return result[1:-1]
 
-    def move(self, pozOut, filed):
+    def move(self, pozOut, field):
         pozIn = (self.x, self.y)[::-1]
         pozOut = pozOut[::-1]
         labirint = []
-        for i in filed:
+        for i in field:
             labirint.append(i[:])
-        path = [[x if x == 0 else -1 for x in y] for y in labirint]
+        # path = [[x if x == 0 else -1 for x in y] for y in labirint]
+        path = [[0 if x == 10 else -1 for x in y] for y in labirint]
         path[pozIn[0]][pozIn[1]] = 1
         if not self.found(path, pozOut):
             return None

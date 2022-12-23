@@ -21,6 +21,8 @@ class Board:
 
         self.seed = self.get_seed()
         self.create_map()
+
+        self.items = []
         
     # настройка внешнего вида
     # def set_view(self, left, top, cell_size):
@@ -203,8 +205,10 @@ class Board:
                 while coord2 >= self.height:
                     coord2 -= 15
                 print(coord, coord2)
-                if self.has_path(coord2, coord, self.start_coords[1], self.start_coords[0]) or\
-                        (coord, coord2) in to_check or self.board[coord][coord2] == 20:
+                # if self.has_path(coord2, coord, self.start_coords[1], self.start_coords[0]) or\
+                #         (coord, coord2) in to_check or self.board[coord][coord2] == 20:
+
+                if (coord, coord2) in to_check or self.board[coord][coord2] == 20:
                     Right_pos = False
 
             to_check.append((coord, coord2))
@@ -223,7 +227,9 @@ class Board:
     def move_player(self, x, y):
         x = self.player.get_coord()[0] + x
         y = self.player.get_coord()[1] + y
-        if 0 <= x < self.width and 0 <= y < self.height and self.board[y][x] == 0:
+        print(self.board[x][y])
+        if 0 <= x < self.width and 0 <= y < self.height and self.board[x][y] in [10, 11, 12]:
+
             self.player.set_coord(x, y)
 
     def move_monsters(self):
@@ -231,6 +237,7 @@ class Board:
             if not i.can_move(self.player.get_coord(), self.board):
                 continue
             move = i.move(self.player.get_coord(), self.board)
+            print(move)
             if move:
                 for j in range(i.get_speed()):
                     if not move:
@@ -239,8 +246,9 @@ class Board:
 
     def interact_monsters(self):
         for i in self.monsters:
-            if abs(i.get_coord()[0] - self.player.get_coord()[0]) <= 1 and \
-                    abs(i.get_coord()[1] - self.player.get_coord()[1]) <= 1:
+            x = abs(i.get_coord()[0] - self.player.get_coord()[0])
+            y = abs(i.get_coord()[1] - self.player.get_coord()[1])
+            if x <= 1 and y <= 1 and y * x == 0:
                 self.player.damage(i.get_damage())
                 print(self.player.heal())
                 if self.player.heal() <= 0:
@@ -273,7 +281,6 @@ class Board:
                     self.monsters.pop(self.monsters.index(i))
                 return None
 
-
     def has_path(self, x1, y1, x2, y2):
         """Метод для определения доступности из клетки (x1, y1)
          клетки (x2, y2) по волновому методу"""
@@ -297,20 +304,20 @@ class Board:
         return dist >= 0
 
 
-if __name__ == '__main__':
-    pygame.init()
-    s = 15
-    size = width, height = s * 30 + 40, s * 30 + 40
-    screen = pygame.display.set_mode(size)
-
-    board = Board(s, s)
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                board.get_click(event.pos)
-        screen.fill((0, 0, 0))
-        board.render(screen)
-        pygame.display.flip()
+# if __name__ == '__main__':
+#     pygame.init()
+#     s = 22
+#     size = width, height = s * 30 + 40, s * 30 + 40
+#     screen = pygame.display.set_mode(size)
+#
+#     board = Board(s, s)
+#     running = True
+#     while running:
+#         for event in pygame.event.get():
+#             if event.type == pygame.QUIT:
+#                 running = False
+#             if event.type == pygame.MOUSEBUTTONDOWN:
+#                 board.get_click(event.pos)
+#         screen.fill((0, 0, 0))
+#         board.render(screen)
+#         pygame.display.flip()

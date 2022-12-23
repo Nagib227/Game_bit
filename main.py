@@ -1,19 +1,20 @@
 import pygame
 
 from END import END
-from Game_Board import Board
+from Board import Board
 
 
 if __name__ == '__main__':
-    time = 1000
-    time_Move = 1000
-    s = 20
-    #######
-    size = width, height = s * 25 + 10 * 2, s * 25 + 10 * 2
+    time = 500
+    time_Move = 500
+    pygame.init()
+    s = 22
+    size = width, height = s * 30 + 40, s * 30 + 40
     sc = pygame.display.set_mode(size)
+    board = Board(s, s)
+
     NOT_MOVE = pygame.USEREVENT + 1
     MOVE = pygame.USEREVENT + 2
-    board = Board()
     clock = pygame.time.Clock()
     fps = 10
     move = False
@@ -25,7 +26,7 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-                END() # !!!!!!!!!!!!!!
+                END()  # !!!!!!!!!!!!!!
             if event.type == NOT_MOVE:
                 move = True
                 move_P = True
@@ -39,22 +40,22 @@ if __name__ == '__main__':
                 print("Конец тайминга хода")
                 board.interact_monsters()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_w:
+                if event.key == pygame.K_a:
                     if move and move_P:
                         move_P = False
                         print("W")
                         board.move_player(0, -1)
-                if event.key == pygame.K_s:
+                if event.key == pygame.K_d:
                     if move and move_P:
                         move_P = False
                         board.move_player(0, 1)
                         print("S")
-                if event.key == pygame.K_a:
+                if event.key == pygame.K_w:
                     if move and move_P:
                         move_P = False
                         print("A")
                         board.move_player(-1, 0)
-                if event.key == pygame.K_d:
+                if event.key == pygame.K_s:
                     if move and move_P:
                         move_P = False
                         print("D")
@@ -66,7 +67,7 @@ if __name__ == '__main__':
                 if event.button == 1:
                     if move and move_P:
                         move_P = False
-                        print("atack")
+                        print("atack")  # ATTACK!!!!!!!!!!!!!!!!!!
                         board.attack(event.pos)
         if move and start:
             start = False
