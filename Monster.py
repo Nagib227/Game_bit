@@ -28,13 +28,13 @@ class Monster:
 
     def set_move(self, move):
         if move == "up":
-            self.y -= 1
-        if move == "down":
-            self.y += 1
-        if move == "left":
             self.x -= 1
-        if move == "right":
+        if move == "down":
             self.x += 1
+        if move == "left":
+            self.y -= 1
+        if move == "right":
+            self.y += 1
 
     def get_damage(self):
         return self.damage
@@ -81,17 +81,18 @@ class Monster:
             elif x < (len(pathArr[y]) - 1) and pathArr[y][x + 1] == weight:
                 result[weight] = 'left'
                 x += 1
-
         return result[1:-1]
 
-    def move(self, pozOut, field):
-        pozIn = (self.x, self.y)[::-1]
-        pozOut = pozOut[::-1]
-        labirint = []
-        for i in field:
-            labirint.append(i[:])
+    def move(self, pozOut, field, monsters, items):
+        pozIn = (self.x, self.y)[::1]
+        pozOut = pozOut[::1]
+        labirint = field
         # path = [[x if x == 0 else -1 for x in y] for y in labirint]
-        path = [[0 if x == 10 else -1 for x in y] for y in labirint]
+        path = [[0 if x in [10] else -1 for x in y] for y in labirint]
+        for i in monsters:
+            path[i.x][i.y] = -1
+        for i in items:
+            path[i.x][i.y] = -1
         path[pozIn[0]][pozIn[1]] = 1
         if not self.found(path, pozOut):
             return None
@@ -99,8 +100,8 @@ class Monster:
         return res
 
     def can_move(self, coord_pl, field):
-        d = {(self.x, self.y)[::-1]: 0}
-        v = [(self.x, self.y)[::-1]]
+        d = {(self.x, self.y)[::1]: 0}
+        v = [(self.x, self.y)[::1]]
         while len(v) > 0:
             x, y = v.pop(0)
             for dx in range(-1, 2):
@@ -109,10 +110,10 @@ class Monster:
                         continue
                     if x + dx < 0 or x + dx >= len(field[0]) or y + dy < 0 or y + dy >= len(field):
                         continue
-                    if field[x + dx][y + dy] in [0]:
+                    if field[x + dx][y + dy] in [10]:
                         dn = d.get((x + dx, y + dy), -1)
                         if dn == -1:
                             d[(x + dx, y + dy)] = d.get((x, y), -1) + 1
                             v.append((x + dx, y + dy))
-        dist = d.get(coord_pl[::-1], -1)
+        dist = d.get(coord_pl[::1], -1)
         return -1 < dist <= self.field_view

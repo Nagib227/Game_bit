@@ -212,10 +212,10 @@ class Board:
                     Right_pos = False
 
             to_check.append((coord, coord2))
-            if i > 4:
+            if i > 4 and False: # Монстр видет на 50 клеток
                 monster = Monster_speed(coord, coord2)
             else:
-                monster = Monster(coord, coord2)
+                monster = Monster(coord, coord2, field_view=50)
             all_monsters.append(monster)
 
         self.monsters = all_monsters
@@ -236,13 +236,14 @@ class Board:
         for i in self.monsters:
             if not i.can_move(self.player.get_coord(), self.board):
                 continue
-            move = i.move(self.player.get_coord(), self.board)
+            move = i.move(self.player.get_coord(), self.board, self.monsters, self.items)
             print(move)
             if move:
                 for j in range(i.get_speed()):
                     if not move:
                         break
                     i.set_move(move.pop(0))
+                # raise Exception('I know Python!')
 
     def interact_monsters(self):
         for i in self.monsters:

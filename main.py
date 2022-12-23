@@ -1,7 +1,7 @@
 import pygame
 
 from END import END
-from Board import Board
+from Game_Board import Board
 
 
 if __name__ == '__main__':
@@ -43,22 +43,22 @@ if __name__ == '__main__':
                 if event.key == pygame.K_a:
                     if move and move_P:
                         move_P = False
-                        print("W")
+                        print("A")
                         board.move_player(0, -1)
                 if event.key == pygame.K_d:
                     if move and move_P:
                         move_P = False
                         board.move_player(0, 1)
-                        print("S")
+                        print("D")
                 if event.key == pygame.K_w:
                     if move and move_P:
                         move_P = False
-                        print("A")
+                        print("W")
                         board.move_player(-1, 0)
                 if event.key == pygame.K_s:
                     if move and move_P:
                         move_P = False
-                        print("D")
+                        print("S")
                         board.move_player(1, 0)
                 if event.key == pygame.K_e:
                     print("E")
@@ -67,7 +67,7 @@ if __name__ == '__main__':
                 if event.button == 1:
                     if move and move_P:
                         move_P = False
-                        print("atack")  # ATTACK!!!!!!!!!!!!!!!!!!
+                        print("attack")  # ATTACK!!!!!!!!!!!!!!!!!!
                         board.attack(event.pos)
         if move and start:
             start = False
