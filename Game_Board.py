@@ -265,13 +265,15 @@ class Board:
         for i in self.items:
             if not all(i.get_coord()):
                 continue
-            if abs(i.get_coord()[0] - self.player.get_coord()[0]) <= 1 and \
-                    abs(i.get_coord()[1] - self.player.get_coord()[1]) <= 1:
-                old = self.player.chang_weapon(i)
-                x, y = i.get_coord()
-                i.set_coord(None, None)
-                if old:
-                    old.set_coord(x, y)
+            x = abs(i.get_coord()[0] - self.player.get_coord()[0])
+            y = abs(i.get_coord()[1] - self.player.get_coord()[1])
+            if x <= 1 and y <= 1 and y * x == 0:
+                if i.__class__.__name__ == "Sword":
+                    old = self.player.chang_weapon(i)
+                    x, y = i.get_coord()
+                    i.set_coord(None, None)
+                    if old:
+                        old.set_coord(x, y)
 
     def attack(self, pos):
         weapon = self.player.get_weapon()
@@ -283,7 +285,7 @@ class Board:
         if not weapon.can_atack(self.player.get_coord(), cell, self.board, self.items):
             return None
         for i in self.monsters:
-            if i.get_coord() == cell:
+            if i.get_coord() == cell[::-1]:
                 i.set_hp(weapon.get_damage())
                 print(i.get_hp())
                 if i.get_hp() <= 0:

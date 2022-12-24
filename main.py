@@ -32,13 +32,13 @@ if __name__ == '__main__':
                 move_P = True
                 start = True
                 print("Начало тайминга хода")
-                print("Ход Монсра")
-                board.move_monsters()
             if event.type == MOVE:
                 move = False
                 end = True
                 print("Конец тайминга хода")
                 board.interact_monsters()
+                print("Ход Монсра")
+                board.move_monsters()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a:
                     if move and move_P:
