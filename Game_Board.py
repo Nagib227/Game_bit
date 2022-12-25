@@ -36,7 +36,7 @@ class Board:
     # 1 - группа клеток по которым можно ходить: 10 - земля. 11 - клетки спавна. 12 - клетки выхода
     # 20 - клетки стен
 
-    def render(self, screen):
+    def render(self, screen, can_move):
         field = pygame.Surface((self.width * self.cell_size, self.height * self.cell_size))
         for j in range(self.height):
             for i in range(self.width):
@@ -66,9 +66,12 @@ class Board:
 
                 pygame.draw.rect(field, (128, 64, 48), (self.chest.y * self.cell_size, self.chest.x * self.cell_size,
                                                         self.cell_size, self.cell_size), 0)
-
-                pygame.draw.rect(field, (0, 255, 0), (self.player.y * self.cell_size, self.player.x * self.cell_size,
-                                                      self.cell_size, self.cell_size), 0)
+                if can_move:
+                    pygame.draw.rect(field, (0, 255, 0), (self.player.y * self.cell_size, self.player.x * self.cell_size,
+                                                          self.cell_size, self.cell_size), 0)
+                else:
+                    pygame.draw.rect(field, (0, 0, 255), (self.player.y * self.cell_size, self.player.x * self.cell_size,
+                                                          self.cell_size, self.cell_size), 0)
 
         screen.blit(field, (self.left, self.top))
 

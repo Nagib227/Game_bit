@@ -78,6 +78,6 @@ if __name__ == '__main__':
             pygame.time.set_timer(MOVE, 0)
             pygame.time.set_timer(NOT_MOVE, time)
         sc.fill((0, 0, 0))
-        board.render(sc)
+        board.render(sc, move)
         pygame.display.flip()
         clock.tick(fps)
