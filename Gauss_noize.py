@@ -15,7 +15,6 @@ def GaussNoize(board, width):
 
 	im1 = im1.filter(ImageFilter.GaussianBlur(radius=1.5))
 
-
 	pix = im1.load()
 
 	for x in range(width):

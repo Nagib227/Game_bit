@@ -6,6 +6,7 @@ from Player import Player
 from Monster import Monster
 from Monster_speed import Monster_speed
 from Sword import Sword
+from Chest import Chest
 
 from END import END
 
@@ -56,9 +57,12 @@ class Board:
                     pygame.draw.rect(field, (0, 0, 0), (monster.y * self.cell_size, monster.x * self.cell_size,
                                                         self.cell_size, self.cell_size), 0)
                 for item in self.items:
-                    if not all(item.get_coord()):
+                    if not all(item.get_coord()):  # what's this string doing?
                         continue
                     pygame.draw.rect(field, (255, 255, 255), (item.y * self.cell_size, item.x * self.cell_size,
+                                                              self.cell_size, self.cell_size), 0)
+
+                pygame.draw.rect(field, (128, 64, 48), (self.chest.y * self.cell_size, self.chest.x * self.cell_size,
                                                         self.cell_size, self.cell_size), 0)
 
                 pygame.draw.rect(field, (0, 255, 0), (self.player.y * self.cell_size, self.player.x * self.cell_size,
@@ -98,7 +102,7 @@ class Board:
         num3 = num2 = str(num1)
         num2 += '0' * int(num[-5])
         num3 += '0' * int(num[-8: -6])
-        next_num = str(sum([int(num1, 2), int(num2, 2), int(num3, 2)]))[:21]
+        next_num = str(sum([int(num1, 2), int(num2, 2), int(num3, 2)]))[5:26]
         if num == next_num:
             next_num = self.randomize(num + '01100000000')
         return next_num
@@ -106,27 +110,27 @@ class Board:
     def create_map(self):
         self.board = [[0] * self.width for _ in range(self.height)]
         self.set_start_finish_points()
+
+        # рандомная карта и точки спавна
         Done = False
         while not Done:
-            Done = True
             self.paint_start_finish_points()
-        # генерация стен с помощью шума Гауса
+            # генерация стен с помощью шума Гауса
             self.board = GaussNoize(self.board, self.width)
 
-            for x in range(self.height):
-                for y in range(self.width):
-                    if self.board[x][y] in [10, 12]:
-                        if not self.has_path(x, y, self.start_coords[1], self.start_coords[0]):
-                            Done = False
-                            break
-                if not Done:
-                    break
-
-            if not self.has_path(self.finish_coords[0], self.finish_coords[1], self.start_coords[0], self.start_coords[1]):
-                Done = False
-
+            Done = self.check_rightness(self.board)
             if not Done:
                 self.board = [[0] * self.width for _ in range(self.height)]
+
+        # рандомный сундук
+        Done = False
+        while not Done:
+            new_board, chest_coords = self.set_structure()
+            Done = self.check_rightness(new_board)
+
+        self.board = new_board
+        self.chest = Chest(chest_coords, self.seed)
+
         self.set_entities()
 
         for i in range(self.width):
@@ -183,6 +187,33 @@ class Board:
 
                 if 0 <= self.finish_coords[0] + range_y < self.width and 0 <= self.finish_coords[1] + range_x < self.height:
                     self.board[self.finish_coords[0] + range_y][self.finish_coords[1] + range_x] = 12
+
+    def set_structure(self):
+        structure = [[10, 10, 20, 10, 10],
+                     [20, 10, 10, 10, 20],
+                     [20, 10, 'Chest', 10, 20],
+                     [20, 10, 10, 10, 20],
+                     [10, 10, 20, 10, 10]]
+        second_board = self.board
+        self.seed = self.randomize(self.seed)
+
+        coord = int(self.seed[2:4])
+        coord2 = int(self.seed[4:6])
+        while coord >= self.width - 5:
+            coord -= 10
+        while coord2 >= self.width - 5:
+            coord2 -= 10
+
+        for x in range(5):
+            for y in range(5):
+                second_board[coord + x][coord2 + y] = structure[x][y]
+                if structure[x][y] == 'Chest':
+                    chest = (coord + x, coord2 + y)
+
+        # for i in range(self.width):
+        #     print(second_board[i])
+
+        return second_board, chest
     # cоздание случайной карты
 
     # размещение сущностей
@@ -196,6 +227,7 @@ class Board:
             Right_pos = False  # цикл создающий и располагающий монстров
             while not Right_pos:  # цикл, который проверяет правильность расположения монстров
                 Right_pos = True
+
                 self.seed = self.randomize(self.seed)
                 coord = sum([int(i) for i in self.seed[11:14]])
                 coord2 = sum([int(i) for i in self.seed[5:8]])
@@ -206,23 +238,36 @@ class Board:
                 # if self.has_path(coord2, coord, self.start_coords[1], self.start_coords[0]) or\
                 #         (coord, coord2) in to_check or self.board[coord][coord2] == 20:
 
-                if (coord, coord2) in to_check or self.board[coord][coord2] == 20:
+                if (coord, coord2) in to_check or self.board[coord][coord2] in [20, 11]:
                     Right_pos = False
 
             to_check.append((coord, coord2))
-            if i > 4: 
+            if i > 6:
                 monster = Monster_speed(coord, coord2)
             else:
                 monster = Monster(coord, coord2)
             all_monsters.append(monster)
 
         self.monsters = all_monsters
+
         if self.start_coords[1] in [0, self.width - 1]:
             self.items = [Sword(self.start_coords[0], self.start_coords[1] + 1)]
         if self.start_coords[0] in [0, self.height - 1]:
             self.items = [Sword(self.start_coords[0] + 1, self.start_coords[1])]
 
-    # def move(self, entity, x, y):  # entity - сущность(игрок, монстр) (взято из майнкрафта)
+    def check_rightness(self, board):
+        for x in range(self.height):
+            for y in range(self.width):
+                if board[x][y] in [10, 12]:
+                    if not self.has_path(x, y, self.start_coords[1], self.start_coords[0]):
+                        return False
+
+        if not self.has_path(self.finish_coords[0], self.finish_coords[1], self.start_coords[0], self.start_coords[1]):
+                return False
+
+        return True
+
+    # def move(self, entity, x, y):  # entity - сущность(игрок, монстр)
     #     entity.x += x
     #     entity.y += y
 
