@@ -26,7 +26,7 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-                END()  # !!!!!!!!!!!!!!
+                END() # !!!!!!!!!!!!!!
             if event.type == NOT_MOVE:
                 move = True
                 move_P = True
@@ -48,8 +48,8 @@ if __name__ == '__main__':
                 if event.key == pygame.K_d:
                     if move and move_P:
                         move_P = False
-                        board.move_player(0, 1)
                         print("D")
+                        board.move_player(0, 1)
                 if event.key == pygame.K_w:
                     if move and move_P:
                         move_P = False
