@@ -11,7 +11,7 @@ if __name__ == '__main__':
     s = 22
     size = width, height = s * 30 + 40, s * 30 + 40
     sc = pygame.display.set_mode(size)
-    board = Board(s, s)
+    board = Board(s, s, map_save=False)  # при передаче в map_save True, то программа будет сохранять удачные карты
 
     NOT_MOVE = pygame.USEREVENT + 1
     MOVE = pygame.USEREVENT + 2

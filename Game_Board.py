@@ -13,13 +13,15 @@ from END import END
 
 class Board:
     # создание поля
-    def __init__(self, board_width, board_height):
+    def __init__(self, board_width, board_height, map_save=False):
         self.width = board_width
         self.height = board_height
         # значения по умолчанию
         self.left = 20
         self.top = 20
         self.cell_size = 30
+
+        self.map_save = map_save
 
         self.seed = self.get_seed()
         self.create_map()
@@ -116,7 +118,7 @@ class Board:
         while not Done:
             self.paint_start_finish_points()
             # генерация стен с помощью шума Гауса
-            self.board = GaussNoize(self.board, self.width)
+            self.board = GaussNoize(self.board, self.width, self.map_save, self.seed)
 
             Done = self.check_rightness(self.board)
             if not Done:
