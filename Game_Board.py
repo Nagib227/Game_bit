@@ -6,6 +6,7 @@ from Player import Player
 from Monster import Monster
 from Monster_speed import Monster_speed
 from Sword import Sword
+from Bow import Bow
 from Chest import Chest
 
 from END import END
@@ -59,13 +60,26 @@ class Board:
                     pygame.draw.rect(field, (0, 0, 0), (monster.y * self.cell_size, monster.x * self.cell_size,
                                                         self.cell_size, self.cell_size), 0)
                 for item in self.items:
-                    if not all(item.get_coord()):  # what's this string doing?
+                    if not all(item.get_coord()):
                         continue
                     pygame.draw.rect(field, (255, 255, 255), (item.y * self.cell_size, item.x * self.cell_size,
                                                               self.cell_size, self.cell_size), 0)
 
                 pygame.draw.rect(field, (128, 64, 48), (self.chest.y * self.cell_size, self.chest.x * self.cell_size,
                                                         self.cell_size, self.cell_size), 0)
+
+                for item in self.items:
+                    pygame.draw.rect(field, (210, 210, 210), (i * self.cell_size, j * self.cell_size,
+                                                              self.cell_size, self.cell_size), 0)
+                    if isinstance(item, Sword):
+                        color_item = pygame.Color(10, 10, 255)
+                    else:
+                        color_item = pygame.Color(128, 64, 48)
+
+                    pygame.draw.rect(field, color_item, (item.y * self.cell_size + 5, item.x * self.cell_size + 5,
+                                                         self.cell_size - 10, self.cell_size - 10), 0)
+
+                # игрок
                 if can_move:
                     pygame.draw.rect(field, (100, 255, 100), (self.player.y * self.cell_size, self.player.x * self.cell_size,
                                                               self.cell_size, self.cell_size), 0)
@@ -114,6 +128,7 @@ class Board:
 
     def create_map(self):
         self.board = [[0] * self.width for _ in range(self.height)]
+        self.items = []
         self.set_start_finish_points()
 
         # рандомная карта и точки спавна
@@ -136,8 +151,13 @@ class Board:
         self.board = new_board
         self.chest = Chest(chest_coords, self.seed)
 
+        # генерация предметов на земле
+        self.set_items()
+
+        # размещение сущностей
         self.set_entities()
 
+        # delete
         for i in range(self.width):
             print(i, self.board[i])
 
@@ -221,6 +241,40 @@ class Board:
         return second_board, chest
     # cоздание случайной карты
 
+    def set_items(self):
+        # предметы на спавне
+        if self.start_coords[0] == 0 and self.start_coords[1] == self.width - 1:  # right top
+            self.items.append(Sword(1, self.width - 1))
+            self.items.append(Bow(0, self.width - 2))
+
+        elif self.start_coords[0] == 0 and self.start_coords[1] == 0:  # left top
+            self.items.append(Sword(1, 0))
+            self.items.append(Bow(0, 1))
+
+        elif self.start_coords[0] == 0:  # top
+            self.items.append(Sword(0, self.start_coords[1] + 1))
+            self.items.append(Bow(0, self.start_coords[1] - 1))
+
+        elif self.start_coords[0] == self.width - 1 and self.start_coords[1] == 0:  # left bottom
+            self.items.append(Sword(self.width - 1, 1))
+            self.items.append(Bow(self.width - 2, 0))
+
+        elif self.start_coords[1] == 0:  # left
+            self.items.append(Sword(self.start_coords[0] + 1, 0))
+            self.items.append(Bow(self.start_coords[0] - 1, 0))
+
+        elif self.start_coords[0] == self.width - 1 and self.start_coords[1] == self.width - 1:  # right bottom
+            self.items.append(Sword(self.width - 2, self.width - 1))
+            self.items.append(Bow(self.width - 1, self.width - 2))
+
+        elif self.start_coords[0] == self.width - 1:  # bottom
+            self.items.append(Sword(self.width - 1, self.start_coords[1] + 1))
+            self.items.append(Bow(self.width - 1, self.start_coords[1] - 1))
+
+        elif self.start_coords[0] == self.width - 1:  # right
+            self.items.append(Sword(self.start_coords[0] - 1, self.width - 1))
+            self.items.append(Bow(self.start_coords[1] + 1, self.width - 1))
+
     # размещение сущностей
     def set_entities(self):
         self.player = Player(self.start_coords[0], self.start_coords[1])
@@ -254,11 +308,6 @@ class Board:
             all_monsters.append(monster)
 
         self.monsters = all_monsters
-
-        if self.start_coords[1] in [0, self.width - 1]:
-            self.items = [Sword(self.start_coords[0], self.start_coords[1] + 1)]
-        if self.start_coords[0] in [0, self.height - 1]:
-            self.items = [Sword(self.start_coords[0] + 1, self.start_coords[1])]
 
     def check_rightness(self, board):
         for x in range(self.height):
