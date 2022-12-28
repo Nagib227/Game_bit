@@ -18,9 +18,9 @@ class Weapon:
     def get_damage(self):
         return self.damage
 
-    def get_field_atack(self):
+    def get_field_attack(self):
         return self.field_atack
-
+'''
     def can_atack(self, coord_pl, coord_atack, field, items):
         coord_atack = coord_atack[::-1]
         y_point = abs(coord_pl[0] - coord_atack[0])
@@ -48,6 +48,7 @@ class Weapon:
             if field[y + 1][i] in [20]:
                     return False
         return True
+'''
 '''
     def can_atack(self, coord_pl, coord_atack, field, items):
         coord_pl = coord_pl[::-1]

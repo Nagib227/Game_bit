@@ -33,3 +33,31 @@ class Player:
 
     def add_key(self):
         self.key += 1
+
+    def can_attack(self, coord_attack, field, items):
+        coord_attack = coord_attack[::-1]
+        print(self.get_coord(), "pl")
+        print(coord_attack, "at")
+        x_point = abs(self.y - coord_attack[1])
+        y_point = abs(self.x - coord_attack[0])
+        print(x_point, y_point)
+        clos_coord = []
+        for i in items:
+            if i.__class__.__name__ == "Chest":
+                clos_coord.append(i.get_coord())
+        if x_point * y_point != 0:
+            print("/")
+            return False
+        if max(x_point, y_point) > self.active_weapon.get_field_attack():
+            return False
+        for i in range(x_point + 1):
+            if field[self.x][min(self.y, coord_attack[1]) + i] in [20] or\
+               (self.x, min(self.y, coord_attack[1]) + i) in clos_coord:
+                print("f")
+                return False
+        for i in range(y_point + 1):
+            if field[min(self.x, coord_attack[0]) + i][self.y] in [20] or\
+               (min(self.x, coord_attack[0]) + i, self.y) in clos_coord:
+                print("f2")
+                return False
+        return True

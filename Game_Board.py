@@ -386,9 +386,9 @@ class Board:
         if not weapon:
             return None
         cell = self.get_cell(pos)
-        print(weapon.can_atack(self.player.get_coord(), cell, self.board, self.items), "###############################")
+        print(self.player.can_attack(cell, self.board, self.items), "###############################")
         # raise Exception('I know Python!')
-        if not weapon.can_atack(self.player.get_coord(), cell, self.board, self.items):
+        if not self.player.can_attack(cell, self.board, self.items):
             return None
         for i in self.monsters:
             if i.get_coord() == cell[::-1]:
