@@ -68,9 +68,15 @@ class Board:
                 pygame.draw.rect(field, (128, 64, 48), (self.chest.y * self.cell_size, self.chest.x * self.cell_size,
                                                         self.cell_size, self.cell_size), 0)
 
+                count = 0
                 for item in self.items:
-                    pygame.draw.rect(field, (210, 210, 210), (i * self.cell_size, j * self.cell_size,
-                                                              self.cell_size, self.cell_size), 0)
+                    if count < 2:
+                        pygame.draw.rect(field, (255, 255, 0), (item.y * self.cell_size, item.x * self.cell_size,
+                                                                self.cell_size, self.cell_size), 0)
+                    else:
+                        pygame.draw.rect(field, (210, 210, 210), (item.y * self.cell_size, item.x * self.cell_size,
+                                                                  self.cell_size, self.cell_size), 0)
+
                     if isinstance(item, Sword):
                         color_item = pygame.Color(10, 10, 255)
                     else:
@@ -78,6 +84,7 @@ class Board:
 
                     pygame.draw.rect(field, color_item, (item.y * self.cell_size + 5, item.x * self.cell_size + 5,
                                                          self.cell_size - 10, self.cell_size - 10), 0)
+                    count += 1
 
                 # игрок
                 if can_move:
@@ -271,9 +278,9 @@ class Board:
             self.items.append(Sword(self.width - 1, self.start_coords[1] + 1))
             self.items.append(Bow(self.width - 1, self.start_coords[1] - 1))
 
-        elif self.start_coords[0] == self.width - 1:  # right
+        elif self.start_coords[1] == self.width - 1:  # right
             self.items.append(Sword(self.start_coords[0] - 1, self.width - 1))
-            self.items.append(Bow(self.start_coords[1] + 1, self.width - 1))
+            self.items.append(Bow(self.start_coords[0] + 1, self.width - 1))
 
     # размещение сущностей
     def set_entities(self):
