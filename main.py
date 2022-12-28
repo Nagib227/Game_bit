@@ -16,7 +16,7 @@ if __name__ == '__main__':
     NOT_MOVE = pygame.USEREVENT + 1
     MOVE = pygame.USEREVENT + 2
     clock = pygame.time.Clock()
-    fps = 10
+    fps = 120
     move = False
     move_P = False
     end = True

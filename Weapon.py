@@ -20,12 +20,8 @@ class Weapon:
 
     def get_field_atack(self):
         return self.field_atack
-
-    def can_atack(self, coord_pl, coord_atack, field, items):
-        coord_atack = coord_atack[::-1]
-        y_point = abs(coord_pl[0] - coord_atack[0])
-        x_point = abs(coord_pl[1] - coord_atack[1])
-        print(x_point, y_point)
+            
+'''
         if not math.sqrt(x_point ** 2 + y_point ** 2) <= self.field_atack:
             return False
         
@@ -49,6 +45,7 @@ class Weapon:
                 print(field[y + 1][i], y + 1, i)
                 return False
         return True
+'''
 '''
     def can_atack(self, coord_pl, coord_atack, field, items):
         coord_pl = coord_pl[::-1]
