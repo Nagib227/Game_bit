@@ -10,6 +10,7 @@ from Bow import Bow
 from Chest import Chest
 
 from END import END
+from Weapon import Weapon
 
 
 class Board:
@@ -70,6 +71,8 @@ class Board:
 
                 count = 0
                 for item in self.items:
+                    if not all(item.get_coord()):
+                        continue
                     if count < 2:
                         pygame.draw.rect(field, (255, 255, 0), (item.y * self.cell_size, item.x * self.cell_size,
                                                                 self.cell_size, self.cell_size), 0)
@@ -365,21 +368,36 @@ class Board:
                 self.player.damage(i.get_damage())
                 print(self.player.heal())
                 if self.player.heal() <= 0:
+                    print(self.player.get_exp())
                     END()
 
     def interact_items(self):
         for i in self.items:
             if not all(i.get_coord()):
                 continue
-            x = abs(i.get_coord()[0] - self.player.get_coord()[0])
-            y = abs(i.get_coord()[1] - self.player.get_coord()[1])
-            if x <= 1 and y <= 1 and y * x == 0:
-                if i.__class__.__name__ == "Sword":
+            if issubclass(i.__class__, Weapon):
+                x = i.get_coord()[0] == self.player.get_coord()[0]
+                y = i.get_coord()[1] == self.player.get_coord()[1]
+                if x and y:
                     old = self.player.chang_weapon(i)
                     x, y = i.get_coord()
                     i.set_coord(None, None)
                     if old:
                         old.set_coord(x, y)
+                    return None
+            if issubclass(i.__class__, Chest):
+                x = abs(i.get_coord()[0] - self.player.get_coord()[0])
+                y = abs(i.get_coord()[1] - self.player.get_coord()[1])
+                if x <= 1 and y <= 1 and x * y == 0:
+                    # открытие сундука
+                    # i.open()
+                    '''
+                    old = self.player.chang_weapon(i)
+                    x, y = i.get_coord()
+                    i.set_coord(None, None)
+                    if old:
+                        old.set_coord(x, y)
+                    '''
 
     def attack(self, pos):
         weapon = self.player.get_weapon()
@@ -393,8 +411,9 @@ class Board:
         for i in self.monsters:
             if i.get_coord() == cell[::-1]:
                 i.set_hp(weapon.get_damage())
-                print(i.get_hp())
                 if i.get_hp() <= 0:
+                    self.player.set_loot(i.get_loot())
+                    self.player.set_exp(i.get_exp())
                     self.monsters.pop(self.monsters.index(i))
                 return None
 

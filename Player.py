@@ -1,11 +1,11 @@
 class Player:
-    def __init__(self, x, y, hp=9999999999999999999999999999999):
+    def __init__(self, x, y, hp=10):
         self.x = x
         self.y = y
         self.key = 0
         self.hp = hp
         self.active_weapon = None
-        self.inventory = []
+        self.exp = 0
 
     def set_coord(self, x, y):
         self.x = x
@@ -18,6 +18,19 @@ class Player:
         old = self.active_weapon
         self.active_weapon = weapon
         return old
+
+    def set_loot(self, loot):
+        if not loot:
+            return None
+        for i in loot:
+            if i == "key":
+                self.add_key()
+
+    def set_exp(self, exp):
+        self.exp += exp
+
+    def get_exp(self):
+        return self.exp
 
     def get_weapon(self):
         return self.active_weapon
@@ -33,6 +46,9 @@ class Player:
 
     def add_key(self):
         self.key += 1
+
+    def get_key(self):
+        return self.key
 
     def can_attack(self, coord_attack, field, items):
         coord_attack = coord_attack[::-1]

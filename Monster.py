@@ -9,7 +9,8 @@ class Monster:
         self.field_view = field_view
         self.loot = loot
         self.exp = exp
-        self.timing_move = (time_move, 0)  # [0] - частота хода, [1] - текущий ход
+        self.time_move = time_move
+        self.cur_move = 0 # [0] - частота хода, [1] - текущий ход
 
     def get_hp(self):
         return self.hp
@@ -41,6 +42,9 @@ class Monster:
 
     def get_loot(self):
         return self.loot
+
+    def get_exp(self):
+        return self.exp
 
     def found(self, pathArr, finPoint):
         weight = 1
@@ -84,8 +88,7 @@ class Monster:
         return result[1:-1]
 
     def move(self, pozOut, field, monsters, items):
-        pozIn = (self.x, self.y)[::1]
-        pozOut = pozOut[::1]
+        pozIn = (self.x, self.y)
         labirint = field
         # path = [[x if x == 0 else -1 for x in y] for y in labirint]
         path = [[0 if x in [10] else -1 for x in y] for y in labirint]
@@ -100,9 +103,13 @@ class Monster:
         res = self.printPath(path, pozOut)
         return res
 
+    def set_current_move(self):
+        self.cur_move = (self.cur_move + 1) % self.time_move
+        return not self.cur_move
+
     def can_move(self, coord_pl, field):
-        d = {(self.x, self.y)[::1]: 0}
-        v = [(self.x, self.y)[::1]]
+        d = {(self.x, self.y): 0}
+        v = [(self.x, self.y)]
         while len(v) > 0:
             x, y = v.pop(0)
             for dx in range(-1, 2):
@@ -117,4 +124,6 @@ class Monster:
                             d[(x + dx, y + dy)] = d.get((x, y), -1) + 1
                             v.append((x + dx, y + dy))
         dist = d.get(coord_pl[::1], -1)
-        return -1 < dist <= self.field_view
+        if -1 < dist <= self.field_view:
+            if self.set_current_move():
+                return True
