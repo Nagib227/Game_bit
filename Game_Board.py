@@ -241,6 +241,8 @@ class Board:
 
         for x in range(5):
             for y in range(5):
+                if second_board[coord + x][coord2 + y] in [11, 12]:
+                    continue
                 second_board[coord + x][coord2 + y] = structure[x][y]
                 if structure[x][y] == 'Chest':
                     chest = (coord + x, coord2 + y)
