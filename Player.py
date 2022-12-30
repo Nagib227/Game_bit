@@ -25,6 +25,8 @@ class Player:
         for i in loot:
             if i == "key":
                 self.add_key()
+            if i.__class__.__name__ == "Healing_potion":
+                self.healing(i.get_heal())
 
     def set_exp(self, exp):
         self.exp += exp

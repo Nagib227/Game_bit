@@ -79,10 +79,9 @@ class Board:
                     else:
                         pygame.draw.rect(field, (210, 210, 210), (item.y * self.cell_size, item.x * self.cell_size,
                                                                   self.cell_size, self.cell_size), 0)
-
                     if isinstance(item, Sword):
                         color_item = pygame.Color(10, 10, 255)
-                    else:
+                    elif isinstance(item, Bow):
                         color_item = pygame.Color(128, 64, 48)
 
                     pygame.draw.rect(field, color_item, (item.y * self.cell_size + 5, item.x * self.cell_size + 5,
@@ -374,10 +373,12 @@ class Board:
                     END()
 
     def interact_items(self):
+        print(self.items)
         for i in self.items:
             if not all(i.get_coord()):
                 continue
             if issubclass(i.__class__, Weapon):
+                print("weapon")
                 x = i.get_coord()[0] == self.player.get_coord()[0]
                 y = i.get_coord()[1] == self.player.get_coord()[1]
                 if x and y:
@@ -388,6 +389,7 @@ class Board:
                         old.set_coord(x, y)
                     return None
             if issubclass(i.__class__, Chest):
+                print("chest")
                 x = abs(i.get_coord()[0] - self.player.get_coord()[0])
                 y = abs(i.get_coord()[1] - self.player.get_coord()[1])
                 if x <= 1 and y <= 1 and x * y == 0:
