@@ -1,6 +1,3 @@
-import math
-
-
 class Weapon:
     def __init__(self, x, y, damage, field_atack):
         self.x = x
