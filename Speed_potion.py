@@ -1,5 +1,8 @@
 class Speed_potion:
-    def __init__(self, speed, time):
+    def __init__(self, speed, time, x, y):
+        self.x = x
+        self.y = y
+
         self.speed = speed
         self.time = time
 

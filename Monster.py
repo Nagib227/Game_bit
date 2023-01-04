@@ -10,7 +10,7 @@ class Monster:
         self.loot = loot
         self.exp = exp
         self.time_move = time_move
-        self.cur_move = 0 # [0] - частота хода, [1] - текущий ход
+        self.cur_move = 0  # [0] - частота хода, [1] - текущий ход
 
     def get_hp(self):
         return self.hp
