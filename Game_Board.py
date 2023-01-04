@@ -407,6 +407,7 @@ class Board:
         chest.is_opened = True
         self.items.append(chest.get_item())
         self.player.set_exp(chest.exp)
+        print('opened')
 
     def attack(self, pos):
         weapon = self.player.get_weapon()
