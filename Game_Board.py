@@ -58,47 +58,46 @@ class Board:
                 elif self.board[j][i] == 20:
                     pygame.draw.rect(field, (100, 100, 100), (i * self.cell_size, j * self.cell_size,
                                                               self.cell_size, self.cell_size), 0)
-                for monster in self.monsters:
-                    pygame.draw.rect(field, (0, 0, 0), (monster.y * self.cell_size, monster.x * self.cell_size,
+        for monster in self.monsters:
+            pygame.draw.rect(field, (0, 0, 0), (monster.y * self.cell_size, monster.x * self.cell_size,
+                                                self.cell_size, self.cell_size), 0)
+
+        # сундук
+        pygame.draw.rect(field, (128, 64, 48), (self.chest.y * self.cell_size, self.chest.x * self.cell_size,
+                                                self.cell_size, self.cell_size), 0)
+
+        # предметы на земле
+        count = 0
+        for item in self.items:
+            if item.get_coord()[0] is None:
+                continue
+            # if not all(item.get_coord()):
+            #     continue
+            if count < 2:
+                pygame.draw.rect(field, (255, 255, 0), (item.y * self.cell_size, item.x * self.cell_size,
                                                         self.cell_size, self.cell_size), 0)
-                for item in self.items:
-                    if not all(item.get_coord()):
-                        continue
-                    pygame.draw.rect(field, (255, 255, 255), (item.y * self.cell_size, item.x * self.cell_size,
-                                                              self.cell_size, self.cell_size), 0)
+            else:
+                pygame.draw.rect(field, (210, 210, 210), (item.y * self.cell_size, item.x * self.cell_size,
+                                                          self.cell_size, self.cell_size), 0)
 
-                pygame.draw.rect(field, (128, 64, 48), (self.chest.y * self.cell_size, self.chest.x * self.cell_size,
-                                                        self.cell_size, self.cell_size), 0)
+            if isinstance(item, Sword):
+                color_item = pygame.Color(10, 10, 255)
+            elif isinstance(item, Bow):
+                color_item = pygame.Color(128, 64, 48)
+            elif isinstance(item, Healing_potion):
+                color_item = pygame.Color(255, 20, 40)
 
-                count = 0
-                for item in self.items:
-                    if not all(item.get_coord()):
-                        continue
-                    if count < 2:
-                        pygame.draw.rect(field, (255, 255, 0), (item.y * self.cell_size, item.x * self.cell_size,
-                                                                self.cell_size, self.cell_size), 0)
-                    else:
-                        pygame.draw.rect(field, (210, 210, 210), (item.y * self.cell_size, item.x * self.cell_size,
-                                                                  self.cell_size, self.cell_size), 0)
+            pygame.draw.rect(field, color_item, (item.y * self.cell_size + 5, item.x * self.cell_size + 5,
+                                                 self.cell_size - 10, self.cell_size - 10), 0)
+            count += 1
 
-                    if isinstance(item, Sword):
-                        color_item = pygame.Color(10, 10, 255)
-                    elif isinstance(item, Bow):
-                        color_item = pygame.Color(128, 64, 48)
-                    elif isinstance(item, Healing_potion):
-                        color_item = pygame.Color(255, 20, 40)
-
-                    pygame.draw.rect(field, color_item, (item.y * self.cell_size + 5, item.x * self.cell_size + 5,
-                                                         self.cell_size - 10, self.cell_size - 10), 0)
-                    count += 1
-
-                # игрок
-                if can_move:
-                    pygame.draw.rect(field, (100, 255, 100), (self.player.y * self.cell_size, self.player.x * self.cell_size,
-                                                              self.cell_size, self.cell_size), 0)
-                else:
-                    pygame.draw.rect(field, (100, 100, 255), (self.player.y * self.cell_size, self.player.x * self.cell_size,
-                                                              self.cell_size, self.cell_size), 0)
+        # игрок
+        if can_move:
+            pygame.draw.rect(field, (100, 255, 100), (self.player.y * self.cell_size, self.player.x * self.cell_size,
+                                                      self.cell_size, self.cell_size), 0)
+        else:
+            pygame.draw.rect(field, (100, 100, 255), (self.player.y * self.cell_size, self.player.x * self.cell_size,
+                                                      self.cell_size, self.cell_size), 0)
 
         screen.blit(field, (self.left, self.top))
 
@@ -217,6 +216,7 @@ class Board:
         print(self.start_coords, self.finish_coords)
 
     def paint_start_finish_points(self):
+        self.start_cells = []
         for range_y in range(-1, 2):  # перебор клетор 3х3 с данной клеткой в центре
             for range_x in range(-1, 2):
                 if 0 <= self.start_coords[0] + range_y < self.width and 0 <= self.start_coords[1] + range_x < self.height:
@@ -289,6 +289,8 @@ class Board:
         elif self.start_coords[1] == self.width - 1:  # right
             self.items.append(Sword(self.start_coords[0] - 1, self.width - 1))
             self.items.append(Bow(self.start_coords[0] + 1, self.width - 1))
+
+        print(self.items)
 
     # размещение сущностей
     def set_entities(self):
@@ -378,7 +380,7 @@ class Board:
 
     def interact_items(self):
         for i in self.items:
-            if not all(i.get_coord()):
+            if i.get_coord()[0] is None:
                 continue
             if issubclass(i.__class__, Weapon):
                 x = i.get_coord()[0] == self.player.get_coord()[0]
