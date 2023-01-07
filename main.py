@@ -12,7 +12,6 @@ if __name__ == '__main__':
     size = width, height = s * 30 + 40, s * 30 + 40
     sc = pygame.display.set_mode(size)
     board = Board(s, s, map_save=False)  # при передаче в map_save True, то программа будет сохранять удачные карты
-
     NOT_MOVE = pygame.USEREVENT + 1
     MOVE = pygame.USEREVENT + 2
     clock = pygame.time.Clock()
@@ -79,5 +78,6 @@ if __name__ == '__main__':
             pygame.time.set_timer(NOT_MOVE, time)
         sc.fill((0, 0, 0))
         board.render(sc, move)
+        board.draw_interface(sc)
         pygame.display.flip()
         clock.tick(fps)

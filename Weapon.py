@@ -1,5 +1,13 @@
-class Weapon:
-    def __init__(self, x, y, damage, field_atack):
+import pygame
+
+
+pygame.init()
+screen = pygame.display.set_mode((1, 1))
+
+
+class Weapon(pygame.sprite.Sprite):
+    def __init__(self, x, y, damage, field_atack,  group):
+        super().__init__(*group)
         self.x = x
         self.y = y
         self.damage = damage

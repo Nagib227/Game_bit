@@ -8,9 +8,11 @@ from Monster_speed import Monster_speed
 from Sword import Sword
 from Bow import Bow
 from Chest import Chest
+from Healing_potion import Healing_potion
 
 from END import END
 from Weapon import Weapon
+from Load_image import load_image
 
 
 class Board:
@@ -19,6 +21,8 @@ class Board:
         self.width = board_width
         self.height = board_height
         # значения по умолчанию
+        self.items_group = pygame.sprite.Group()
+                
         self.left = 20
         self.top = 20
         self.cell_size = 30
@@ -27,6 +31,7 @@ class Board:
 
         self.seed = self.get_seed()
         self.create_map()
+
         
     # настройка внешнего вида
     # def set_view(self, left, top, cell_size):
@@ -97,6 +102,45 @@ class Board:
                                                               self.cell_size, self.cell_size), 0)
 
         screen.blit(field, (self.left, self.top))
+
+    def draw_interface(self, sc, x=25, y=25, s_h=50):
+        # draw heart (рисование сердец)
+        hearts_group = pygame.sprite.Group()
+        hp = self.player.hp
+        false_hp = self.player.get_max_heal() - self.player.hp
+        for i in range(hp):
+            sprite = pygame.sprite.Sprite()
+            sprite.image = pygame.transform.scale(load_image("heart_1.png"), (50, 50))
+            sprite.rect = sprite.image.get_rect()
+            sprite.rect.x = x + s_h * i
+            sprite.rect.y = y
+            hearts_group.add(sprite)
+        for i in range(false_hp):
+            sprite = pygame.sprite.Sprite()
+            sprite.image = pygame.transform.scale(load_image("false_heart.png"), (50, 50))
+            sprite.rect = sprite.image.get_rect()
+            sprite.rect.x = x + s_h * (hp + i)
+            sprite.rect.y = y
+            hearts_group.add(sprite)
+        hearts_group.draw(sc)
+        # draw wepon (рисование оружия)
+        weapon_group = pygame.sprite.Group()
+        sprite = pygame.sprite.Sprite()
+        sprite.image = pygame.transform.scale(load_image("window_2.png"), (120, 105))
+        sprite.rect = sprite.image.get_rect()
+        sprite.rect.x = x
+        sprite.rect.y = y + s_h + 10
+        weapon_group.add(sprite)
+        sprite = pygame.sprite.Sprite()
+        if self.player.active_weapon:
+            sprite.image = pygame.transform.scale(self.player.active_weapon.image, (90, 77))
+        else:
+            sprite.image = pygame.transform.scale(load_image("empty_weapon.png"), (70, 70))
+        sprite.rect = sprite.image.get_rect()
+        sprite.rect.x = x + 5
+        sprite.rect.y = y + s_h + 25
+        weapon_group.add(sprite)
+        weapon_group.draw(sc)
 
     def get_click(self, mouse_pos):
         cell_coords = self.get_cell(mouse_pos)
@@ -255,36 +299,36 @@ class Board:
     def set_items(self):
         # предметы на спавне
         if self.start_coords[0] == 0 and self.start_coords[1] == self.width - 1:  # right top
-            self.items.append(Sword(1, self.width - 1))
-            self.items.append(Bow(0, self.width - 2))
-
+            self.items.append(Sword(1, self.width - 1, self.items_group))
+            self.items.append(Bow(0, self.width - 2, self.items_group))
+            
         elif self.start_coords[0] == 0 and self.start_coords[1] == 0:  # left top
-            self.items.append(Sword(1, 0))
-            self.items.append(Bow(0, 1))
-
+            self.items.append(Sword(1, 0, self.items_group))
+            self.items.append(Bow(0, 1, self.items_group))
+            
         elif self.start_coords[0] == 0:  # top
-            self.items.append(Sword(0, self.start_coords[1] + 1))
-            self.items.append(Bow(0, self.start_coords[1] - 1))
-
+            self.items.append(Sword(0, self.start_coords[1] + 1, self.items_group))
+            self.items.append(Bow(0, self.start_coords[1] - 1, self.items_group))
+            
         elif self.start_coords[0] == self.width - 1 and self.start_coords[1] == 0:  # left bottom
-            self.items.append(Sword(self.width - 1, 1))
-            self.items.append(Bow(self.width - 2, 0))
-
+            self.items.append(Sword(self.width - 1, 1, self.items_group))
+            self.items.append(Bow(self.width - 2, 0, self.items_group))
+            
         elif self.start_coords[1] == 0:  # left
-            self.items.append(Sword(self.start_coords[0] + 1, 0))
-            self.items.append(Bow(self.start_coords[0] - 1, 0))
+            self.items.append(Sword(self.start_coords[0] + 1, 0, self.items_group))
+            self.items.append(Bow(self.start_coords[0] - 1, 0, self.items_group))
 
         elif self.start_coords[0] == self.width - 1 and self.start_coords[1] == self.width - 1:  # right bottom
-            self.items.append(Sword(self.width - 2, self.width - 1))
-            self.items.append(Bow(self.width - 1, self.width - 2))
+            self.items.append(Sword(self.width - 2, self.width - 1, self.items_group))
+            self.items.append(Bow(self.width - 1, self.width - 2, self.items_group))
 
         elif self.start_coords[0] == self.width - 1:  # bottom
-            self.items.append(Sword(self.width - 1, self.start_coords[1] + 1))
-            self.items.append(Bow(self.width - 1, self.start_coords[1] - 1))
+            self.items.append(Sword(self.width - 1, self.start_coords[1] + 1, self.items_group))
+            self.items.append(Bow(self.width - 1, self.start_coords[1] - 1, self.items_group))
 
         elif self.start_coords[1] == self.width - 1:  # right
-            self.items.append(Sword(self.start_coords[0] - 1, self.width - 1))
-            self.items.append(Bow(self.start_coords[0] + 1, self.width - 1))
+            self.items.append(Sword(self.start_coords[0] - 1, self.width - 1, self.items_group))
+            self.items.append(Bow(self.start_coords[0] + 1, self.width - 1, self.items_group))
 
     # размещение сущностей
     def set_entities(self):
@@ -367,8 +411,8 @@ class Board:
             y = abs(i.get_coord()[1] - self.player.get_coord()[1])
             if x <= 1 and y <= 1 and y * x == 0:
                 self.player.damage(i.get_damage())
-                print(self.player.heal())
-                if self.player.heal() <= 0:
+                print(self.player.hp)
+                if self.player.hp <= 0:
                     print(self.player.get_exp())
                     END()
 
@@ -394,7 +438,7 @@ class Board:
                 y = abs(i.get_coord()[1] - self.player.get_coord()[1])
                 if x <= 1 and y <= 1 and x * y == 0:
                     # открытие сундука
-                    # i.open()
+                    # self.player.set_loot(i.open())
                     '''
                     old = self.player.chang_weapon(i)
                     x, y = i.get_coord()

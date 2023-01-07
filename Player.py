@@ -1,9 +1,10 @@
 class Player:
-    def __init__(self, x, y, hp=10):
+    def __init__(self, x, y, hp=10, max_hp=10):
         self.x = x
         self.y = y
         self.key = 0
         self.hp = hp
+        self.max_hp = max_hp
         self.active_weapon = None
         self.exp = 0
 
@@ -40,8 +41,8 @@ class Player:
     def damage(self, damage):
         self.hp -= damage
 
-    def heal(self):
-        return self.hp
+    def get_max_heal(self):
+        return self.max_hp
 
     def healing(self, hp):
         self.hp += hp
