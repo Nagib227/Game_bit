@@ -176,7 +176,7 @@ class Board:
         num1 = bin(int(num))[2:]
         num3 = num2 = str(num1)
         num2 += '0' * int(num[-5])
-        num3 += '0' * int(num[-8: -6])
+        num3 += '0' * int(num[-8:-6])
         next_num = str(sum([int(num1, 2), int(num2, 2), int(num3, 2)]))[5:26]
         if num == next_num:
             next_num = self.randomize(num + '01100000000')
@@ -421,6 +421,7 @@ class Board:
                     return Lose(self.player.get_exp())
 
     def interact_items(self):
+        print(self.items)
         for i in self.items:
             if i.get_coord()[0] is None:
                 continue
@@ -440,8 +441,13 @@ class Board:
                 x = abs(i.get_coord()[0] - self.player.get_coord()[0])
                 y = abs(i.get_coord()[1] - self.player.get_coord()[1])
                 if x <= 1 and y <= 1 and x * y == 0 and not i.is_opened:
-                    self.open_chest(i)
-
+                    self.items.append(self.open_chest(i))
+            elif issubclass(i.__class__, Chest):
+                print("chest")
+                x = abs(i.get_coord()[0] - self.player.get_coord()[0])
+                y = abs(i.get_coord()[1] - self.player.get_coord()[1])
+                if x <= 1 and y <= 1 and x * y == 0 and not i.is_opened:
+                    self.items.append(self.open_chest(i))
     def open_chest(self, chest):
         chest.is_opened = True
         self.items.append(chest.get_item())

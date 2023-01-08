@@ -6,7 +6,11 @@ class Player:
         self.hp = hp
         self.max_hp = max_hp
         self.active_weapon = None
+        self.hp_potion = []
         self.exp = 0
+
+    def get_hp_potion(self):
+        return self.hp_potion
 
     def set_coord(self, x, y):
         self.x = x
@@ -27,7 +31,7 @@ class Player:
             if i == "key":
                 self.add_key()
             if i.__class__.__name__ == "Healing_potion":
-                self.healing(i.get_heal())
+                self.hp_potion.append(i)
 
     def set_exp(self, exp):
         self.exp += exp
@@ -44,7 +48,7 @@ class Player:
     def get_max_heal(self):
         return self.max_hp
 
-    def healing(self, hp):
+    def healing(self):
         self.hp += hp
 
     def add_key(self):
