@@ -82,6 +82,7 @@ def main(btn="new"):
                 if event.key == pygame.K_e:
                     print("E")
                     board.interact_items()
+                    board.interact_chest()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if move and move_P:
