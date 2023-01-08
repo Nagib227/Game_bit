@@ -33,13 +33,6 @@ class Board:
         self.seed = self.get_seed()
         self.create_map()
 
-        
-    # настройка внешнего вида
-    # def set_view(self, left, top, cell_size):
-    #     self.left = left
-    #     self.top = top
-    #     self.cell_size = cell_size
-
     # 0 - пустые клетки
     # 1 - группа клеток по которым можно ходить: 10 - земля. 11 - клетки спавна. 12 - клетки выхода
     # 20 - клетки стен
@@ -72,18 +65,9 @@ class Board:
                                                 self.cell_size, self.cell_size), 0)
 
         # предметы на земле
-        count = 0
         for item in self.items:
             if item.get_coord()[0] is None:
                 continue
-            # if not all(item.get_coord()):
-            #     continue
-            if count < 2:
-                pygame.draw.rect(field, (255, 255, 0), (item.y * self.cell_size, item.x * self.cell_size,
-                                                        self.cell_size, self.cell_size), 0)
-            else:
-                pygame.draw.rect(field, (210, 210, 210), (item.y * self.cell_size, item.x * self.cell_size,
-                                                          self.cell_size, self.cell_size), 0)
 
             if isinstance(item, Sword):
                 color_item = pygame.Color(10, 10, 255)
@@ -94,7 +78,6 @@ class Board:
 
             pygame.draw.rect(field, color_item, (item.y * self.cell_size + 5, item.x * self.cell_size + 5,
                                                  self.cell_size - 10, self.cell_size - 10), 0)
-            count += 1
 
         # игрок
         if can_move:
@@ -144,6 +127,31 @@ class Board:
         sprite.rect.y = y + s_h + 25
         weapon_group.add(sprite)
         weapon_group.draw(sc)
+        # draw healing_potion (рисование зелья здоровья)
+        healing_potion_group = pygame.sprite.Group()
+        sprite = pygame.sprite.Sprite()
+        sprite.image = pygame.transform.scale(load_image("health_potion.png"), (60, 75))
+        sprite.rect = sprite.image.get_rect()
+        sprite.rect.x = x
+        y_hp = y + s_h + 20 + 105
+        sprite.rect.y = y_hp
+        
+        font = pygame.font.Font(None, 70)
+        string_rendered = font.render("x", 1, pygame.Color('black'))
+        intro_rect = string_rendered.get_rect()
+        intro_rect.y = y_hp + 32
+        intro_rect.x = x + 65
+        sc.blit(string_rendered, intro_rect)
+
+        font = pygame.font.Font(None, 120)
+        string_rendered = font.render(str(len(self.player.get_hp_potion())), 1, pygame.Color('white'))
+        intro_rect = string_rendered.get_rect()
+        intro_rect.y = y_hp + 5
+        intro_rect.x = x + 95
+        sc.blit(string_rendered, intro_rect)
+        
+        healing_potion_group.add(sprite)
+        healing_potion_group.draw(sc)
 
     def get_click(self, mouse_pos):
         cell_coords = self.get_cell(mouse_pos)
@@ -153,13 +161,6 @@ class Board:
     def get_cell(self, mouse_pos):
         coords = ((mouse_pos[0] - self.left) // self.cell_size, (mouse_pos[1] - self.left) // self.cell_size)
         return coords
-
-    # def on_click(self, cell_coords):
-    #     if 0 <= cell_coords[0] < self.width and 0 <= cell_coords[1] < self.height:
-    #         print(cell_coords)
-    #         self.board[cell_coords[1]][cell_coords[0]] = 20
-    #     else:
-    #         print('None')
 
     # cоздание случайной карты
     def get_seed(self):
@@ -176,7 +177,7 @@ class Board:
         num1 = bin(int(num))[2:]
         num3 = num2 = str(num1)
         num2 += '0' * int(num[-5])
-        num3 += '0' * int(num[-8:-6])
+        num3 += '0' * int(num[-5:-3])
         next_num = str(sum([int(num1, 2), int(num2, 2), int(num3, 2)]))[5:26]
         if num == next_num:
             next_num = self.randomize(num + '01100000000')
@@ -205,17 +206,13 @@ class Board:
             Done = self.check_rightness(new_board)
 
         self.board = new_board
-        self.chest = Chest(chest_coords, self.seed)
+        self.chest = Chest(chest_coords)
 
         # генерация предметов на земле
         self.set_items()
 
         # размещение сущностей
         self.set_entities()
-
-        # delete
-        for i in range(self.width):
-            print(i, self.board[i])
 
     def set_start_finish_points(self):
         self.seed = self.randomize(self.seed)
@@ -294,11 +291,7 @@ class Board:
                 if structure[x][y] == 'Chest':
                     chest = (coord + x, coord2 + y)
 
-        # for i in range(self.width):
-        #     print(second_board[i])
-
         return second_board, chest
-    # cоздание случайной карты
 
     def set_items(self):
         # предметы на спавне
@@ -355,8 +348,6 @@ class Board:
                     coord -= 15
                 while coord2 >= self.height:
                     coord2 -= 15
-                # if self.has_path(coord2, coord, self.start_coords[1], self.start_coords[0]) or\
-                #         (coord, coord2) in to_check or self.board[coord][coord2] == 20:
 
                 if (coord, coord2) in to_check or self.board[coord][coord2] in [20, 11]:
                     Right_pos = False
@@ -369,6 +360,7 @@ class Board:
             all_monsters.append(monster)
 
         self.monsters = all_monsters
+        # cоздание случайной карты
 
     def check_rightness(self, board):
         for x in range(self.height):
@@ -421,7 +413,6 @@ class Board:
                     return Lose(self.player.get_exp())
 
     def interact_items(self):
-        print(self.items)
         for i in self.items:
             if i.get_coord()[0] is None:
                 continue
@@ -442,12 +433,26 @@ class Board:
                 y = abs(i.get_coord()[1] - self.player.get_coord()[1])
                 if x <= 1 and y <= 1 and x * y == 0 and not i.is_opened:
                     self.items.append(self.open_chest(i))
-            elif issubclass(i.__class__, Chest):
-                print("chest")
-                x = abs(i.get_coord()[0] - self.player.get_coord()[0])
-                y = abs(i.get_coord()[1] - self.player.get_coord()[1])
-                if x <= 1 and y <= 1 and x * y == 0 and not i.is_opened:
-                    self.items.append(self.open_chest(i))
+            if issubclass(i.__class__, Healing_potion):
+                x = i.get_coord()[0] == self.player.get_coord()[0]
+                y = i.get_coord()[1] == self.player.get_coord()[1]
+                if x and y:
+                    print("potion")
+                    self.player.set_loot([i])
+                    del self.items[self.items.index(i)]
+            #         i.set_coord(None, None)
+            #         self.player.current_potion = i
+
+    def healing(self):
+        self.player.healing()
+
+    def interact_chest(self):
+        x = abs(self.chest.get_coord()[0] - self.player.get_coord()[0])
+        y = abs(self.chest.get_coord()[1] - self.player.get_coord()[1])
+        if x <= 1 and y <= 1 and x * y == 0 and not self.chest.is_opened:
+            print("chest")
+            self.open_chest(self.chest)
+
     def open_chest(self, chest):
         chest.is_opened = True
         self.items.append(chest.get_item())
@@ -471,6 +476,12 @@ class Board:
                     self.player.set_exp(i.get_exp())
                     self.monsters.pop(self.monsters.index(i))
                 return None
+
+    def save_game(self):
+        pass
+
+    def load_game(self):
+        pass
 
     def has_path(self, x1, y1, x2, y2):
         """Метод для определения доступности из клетки (x1, y1)
