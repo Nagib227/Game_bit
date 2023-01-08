@@ -7,6 +7,9 @@ class Healing_potion:
     def get_heal(self):
         return self.heal
 
-    def set_coords(self, x, y):
+    def set_coord(self, x, y):
         self.x = x
         self.y = y
+
+    def get_coord(self):
+        return self.x, self.y

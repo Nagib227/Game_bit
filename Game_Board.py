@@ -71,18 +71,9 @@ class Board:
                                                 self.cell_size, self.cell_size), 0)
 
         # предметы на земле
-        count = 0
         for item in self.items:
             if item.get_coord()[0] is None:
                 continue
-            # if not all(item.get_coord()):
-            #     continue
-            if count < 2:
-                pygame.draw.rect(field, (255, 255, 0), (item.y * self.cell_size, item.x * self.cell_size,
-                                                        self.cell_size, self.cell_size), 0)
-            else:
-                pygame.draw.rect(field, (210, 210, 210), (item.y * self.cell_size, item.x * self.cell_size,
-                                                          self.cell_size, self.cell_size), 0)
 
             if isinstance(item, Sword):
                 color_item = pygame.Color(10, 10, 255)
@@ -93,7 +84,6 @@ class Board:
 
             pygame.draw.rect(field, color_item, (item.y * self.cell_size + 5, item.x * self.cell_size + 5,
                                                  self.cell_size - 10, self.cell_size - 10), 0)
-            count += 1
 
         # игрок
         if can_move:
@@ -204,17 +194,13 @@ class Board:
             Done = self.check_rightness(new_board)
 
         self.board = new_board
-        self.chest = Chest(chest_coords, self.seed)
+        self.chest = Chest(chest_coords)
 
         # генерация предметов на земле
         self.set_items()
 
         # размещение сущностей
         self.set_entities()
-
-        # delete
-        for i in range(self.width):
-            print(i, self.board[i])
 
     def set_start_finish_points(self):
         self.seed = self.randomize(self.seed)
@@ -436,12 +422,15 @@ class Board:
                     if old:
                         old.set_coord(x, y)
                     return None
-            elif issubclass(i.__class__, Chest):
-                print("chest")
-                x = abs(i.get_coord()[0] - self.player.get_coord()[0])
-                y = abs(i.get_coord()[1] - self.player.get_coord()[1])
-                if x <= 1 and y <= 1 and x * y == 0 and not i.is_opened:
-                    self.open_chest(i)
+            if issubclass(i.__class__, Healing_potion):
+                pass
+
+    def interact_chest(self):
+        x = abs(self.chest.get_coord()[0] - self.player.get_coord()[0])
+        y = abs(self.chest.get_coord()[1] - self.player.get_coord()[1])
+        if x <= 1 and y <= 1 and x * y == 0 and not self.chest.is_opened:
+            print("chest")
+            self.open_chest(self.chest)
 
     def open_chest(self, chest):
         chest.is_opened = True
@@ -466,6 +455,12 @@ class Board:
                     self.player.set_exp(i.get_exp())
                     self.monsters.pop(self.monsters.index(i))
                 return None
+
+    def save_game(self):
+        pass
+
+    def load_game(self):
+        pass
 
     def has_path(self, x1, y1, x2, y2):
         """Метод для определения доступности из клетки (x1, y1)
