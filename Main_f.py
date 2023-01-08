@@ -8,7 +8,7 @@ from END import END
 from Load_image import load_image
 from VARIABLES import *
 
-def main(btn):
+def main(btn="new"):
     time = TIME
     time_Move = TIME_MOVE
     pygame.init()
@@ -54,7 +54,8 @@ def main(btn):
                 move = False
                 end = True
                 print("Конец тайминга хода")
-                board.interact_monsters()
+                if "kill" == board.interact_monsters():
+                    return "kill"
                 print("Ход Монсра")
                 board.move_monsters()
             if event.type == pygame.KEYDOWN:

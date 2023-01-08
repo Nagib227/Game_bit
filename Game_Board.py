@@ -9,6 +9,7 @@ from Sword import Sword
 from Bow import Bow
 from Chest import Chest
 from Healing_potion import Healing_potion
+from Lose import Lose
 
 from END import END
 from Weapon import Weapon
@@ -416,10 +417,8 @@ class Board:
             y = abs(i.get_coord()[1] - self.player.get_coord()[1])
             if x <= 1 and y <= 1 and y * x == 0:
                 self.player.damage(i.get_damage())
-                print(self.player.hp)
                 if self.player.hp <= 0:
-                    print(self.player.get_exp())
-                    END()
+                    return Lose(self.player.get_exp())
 
     def interact_items(self):
         for i in self.items:
