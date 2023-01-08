@@ -1,5 +1,5 @@
 class Healing_potion:
-    def __init__(self, x, y, heal=2):
+    def __init__(self, x, y, heal=4):
         self.x = x
         self.y = y
         self.heal = heal

@@ -32,13 +32,6 @@ class Board:
         self.seed = self.get_seed()
         self.create_map()
 
-        
-    # настройка внешнего вида
-    # def set_view(self, left, top, cell_size):
-    #     self.left = left
-    #     self.top = top
-    #     self.cell_size = cell_size
-
     # 0 - пустые клетки
     # 1 - группа клеток по которым можно ходить: 10 - земля. 11 - клетки спавна. 12 - клетки выхода
     # 20 - клетки стен
@@ -143,13 +136,6 @@ class Board:
         coords = ((mouse_pos[0] - self.left) // self.cell_size, (mouse_pos[1] - self.left) // self.cell_size)
         return coords
 
-    # def on_click(self, cell_coords):
-    #     if 0 <= cell_coords[0] < self.width and 0 <= cell_coords[1] < self.height:
-    #         print(cell_coords)
-    #         self.board[cell_coords[1]][cell_coords[0]] = 20
-    #     else:
-    #         print('None')
-
     # cоздание случайной карты
     def get_seed(self):
         current_time = datetime.now()
@@ -165,7 +151,7 @@ class Board:
         num1 = bin(int(num))[2:]
         num3 = num2 = str(num1)
         num2 += '0' * int(num[-5])
-        num3 += '0' * int(num[-8: -6])
+        num3 += '0' * int(num[-5: -3])
         next_num = str(sum([int(num1, 2), int(num2, 2), int(num3, 2)]))[5:26]
         if num == next_num:
             next_num = self.randomize(num + '01100000000')
@@ -279,11 +265,7 @@ class Board:
                 if structure[x][y] == 'Chest':
                     chest = (coord + x, coord2 + y)
 
-        # for i in range(self.width):
-        #     print(second_board[i])
-
         return second_board, chest
-    # cоздание случайной карты
 
     def set_items(self):
         # предметы на спавне
@@ -340,8 +322,6 @@ class Board:
                     coord -= 15
                 while coord2 >= self.height:
                     coord2 -= 15
-                # if self.has_path(coord2, coord, self.start_coords[1], self.start_coords[0]) or\
-                #         (coord, coord2) in to_check or self.board[coord][coord2] == 20:
 
                 if (coord, coord2) in to_check or self.board[coord][coord2] in [20, 11]:
                     Right_pos = False
@@ -354,6 +334,7 @@ class Board:
             all_monsters.append(monster)
 
         self.monsters = all_monsters
+        # cоздание случайной карты
 
     def check_rightness(self, board):
         for x in range(self.height):
@@ -422,8 +403,16 @@ class Board:
                     if old:
                         old.set_coord(x, y)
                     return None
+
             if issubclass(i.__class__, Healing_potion):
-                pass
+                x = i.get_coord()[0] == self.player.get_coord()[0]
+                y = i.get_coord()[1] == self.player.get_coord()[1]
+                if x and y:
+                    print("potion")
+                    self.player.healing(i.get_heal())
+                    del self.items[-1]
+            #         i.set_coord(None, None)
+            #         self.player.current_potion = i
 
     def interact_chest(self):
         x = abs(self.chest.get_coord()[0] - self.player.get_coord()[0])
