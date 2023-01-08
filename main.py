@@ -2,11 +2,14 @@ import pygame
 
 from END import END
 from Game_Board import Board
+from Bit import Bit
+from Heart_bit import Heart_bit
+from Load_image import load_image
 
 
 if __name__ == '__main__':
-    time = 500
-    time_Move = 500
+    time = 1000
+    time_Move = 200
     pygame.init()
     s = 22
     size = width, height = s * 30 + 40, s * 30 + 40
@@ -14,23 +17,38 @@ if __name__ == '__main__':
     board = Board(s, s, map_save=False)  # при передаче в map_save True, то программа будет сохранять удачные карты
     NOT_MOVE = pygame.USEREVENT + 1
     MOVE = pygame.USEREVENT + 2
+    BIT = pygame.USEREVENT + 3
+    pygame.time.set_timer(BIT, 10)
     clock = pygame.time.Clock()
-    fps = 10
+    fps = 120
     move = False
     move_P = False
     end = True
     start = False
+    bits_group = pygame.sprite.Group()
+    Bit(20, height - 80, round(((width - 40)) / round(time / 10 * 3.05)), (width - 40) // 2, bits_group)
+    Bit(width - 50, height - 80, -round(((width - 40)) / round(time / 10 * 3.05)), (width - 40) // 2, bits_group)
+    Heart_bit((width - 110) // 2, height - 120, bits_group)
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
                 END()  # !!!!!!!!!!!!!!
+            if event.type == BIT:
+                for i in bits_group:
+                    if issubclass(i.__class__, Heart_bit):
+                        i.update(move)
+                    else:
+                        i.update()
             if event.type == NOT_MOVE:
                 move = True
                 move_P = True
                 start = True
                 print("Начало тайминга хода")
+                for i in bits_group:
+                    if issubclass(i.__class__, Bit):
+                        i.set_start()
             if event.type == MOVE:
                 move = False
                 end = True
@@ -79,5 +97,6 @@ if __name__ == '__main__':
         sc.fill((0, 0, 0))
         board.render(sc, move)
         board.draw_interface(sc)
+        bits_group.draw(sc)
         pygame.display.flip()
         clock.tick(fps)
