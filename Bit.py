@@ -3,11 +3,14 @@ from Load_image import load_image
 
 
 class Bit(pygame.sprite.Sprite):
-    image = pygame.transform.scale(load_image("bit.png"), (30, 50))
 
-    def __init__(self, x, y, speed, f, *group):
+    def __init__(self, x, y, speed, f, *group, rot=True):
         super().__init__(*group)
-        self.image = Bit.image
+        if rot:
+            image = pygame.transform.scale(load_image("nota_1.png"), (40, 70))
+        else:
+            image = pygame.transform.scale(load_image("nota_11.png"), (40, 70))
+        self.image = image
         self.rect = self.image.get_rect()
         self.start = (x, y)
         self.rect.x = x

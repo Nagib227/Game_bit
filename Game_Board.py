@@ -403,7 +403,7 @@ class Board:
                     if not move:
                         break
                     i.set_move(move.pop(0))
-                raise Exception('I know Python!')
+                # raise Exception('I know Python!')
 
     def interact_monsters(self):
         for i in self.monsters:

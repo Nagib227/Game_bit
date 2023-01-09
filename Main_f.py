@@ -1,4 +1,5 @@
 import pygame
+import os
 
 from Game_Board import Board
 from Bit import Bit
@@ -28,8 +29,8 @@ def main(btn="new"):
     end = True
     start = False
     bits_group = pygame.sprite.Group()
-    Bit(20, height - 80, round(((width - 40)) / round(time / 10 * 3.05)), (width - 40) // 2, bits_group)
-    Bit(width - 50, height - 80, -round(((width - 40)) / round(time / 10 * 3.05)), (width - 40) // 2, bits_group)
+    Bit(-30, height - 100, round((width - 40) / round(time / 10 * 2.05)), (width - 40) // 2, bits_group, rot=False)
+    Bit(width + 0, height - 100, -round((width - 40) / round(time / 10 * 2.05)), (width - 40) // 2, bits_group, rot=True)
     Heart_bit((width - 110) // 2, height - 120, bits_group)
     running = True
     while running:
@@ -92,7 +93,7 @@ def main(btn="new"):
                 if event.button == 1:
                     if move and move_P:
                         move_P = False
-                        print("attack") # ATTACK!!!!!!!!!!!!!!!!!!
+                        print("attack")
                         board.attack(event.pos)
         if move and start:
             start = False

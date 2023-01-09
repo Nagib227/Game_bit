@@ -1,10 +1,12 @@
 import pygame
+import os
 
 from END import END
 from VARIABLES import *
 from Load_image import load_image
 
 
+os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (1000, 200)
 pygame.init()
 sc = pygame.display.set_mode((1, 1))
 
