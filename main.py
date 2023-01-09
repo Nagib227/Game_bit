@@ -6,4 +6,3 @@ if __name__ == "__main__":
     main(start_window())
     while True:
         main(start_window())
- 

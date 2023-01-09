@@ -3,7 +3,7 @@ from datetime import datetime
 from Gauss_noize import GaussNoize
 
 from Player import Player
-from Monster import Monster
+from Monster_default import Monster_default
 from Monster_speed import Monster_speed
 from Sword import Sword
 from Bow import Bow
@@ -22,7 +22,7 @@ class Board:
         self.width = board_width
         self.height = board_height
         # значения по умолчанию
-        self.items_group = pygame.sprite.Group()
+        self.all_sprites = pygame.sprite.Group()
                 
         self.left = 20
         self.top = 20
@@ -53,28 +53,13 @@ class Board:
                 elif self.board[j][i] == 20:
                     pygame.draw.rect(field, (100, 100, 100), (i * self.cell_size, j * self.cell_size,
                                                               self.cell_size, self.cell_size), 0)
-        for monster in self.monsters:
-            pygame.draw.rect(field, (0, 0, 0), (monster.y * self.cell_size, monster.x * self.cell_size,
-                                                self.cell_size, self.cell_size), 0)
 
         # сундук
         pygame.draw.rect(field, (128, 64, 48), (self.chest.y * self.cell_size, self.chest.x * self.cell_size,
                                                 self.cell_size, self.cell_size), 0)
 
         # предметы на земле
-        for item in self.items:
-            if item.get_coord()[0] is None:
-                continue
-
-            if isinstance(item, Sword):
-                color_item = pygame.Color(10, 10, 255)
-            elif isinstance(item, Bow):
-                color_item = pygame.Color(128, 64, 48)
-            elif isinstance(item, Healing_potion):
-                color_item = pygame.Color(255, 20, 40)
-
-            pygame.draw.rect(field, color_item, (item.y * self.cell_size + 5, item.x * self.cell_size + 5,
-                                                 self.cell_size - 10, self.cell_size - 10), 0)
+        self.all_sprites.draw(field)
 
         # игрок
         if can_move:
@@ -116,7 +101,7 @@ class Board:
         weapon_group.add(sprite)
         sprite = pygame.sprite.Sprite()
         if self.player.active_weapon:
-            sprite.image = pygame.transform.scale(self.player.active_weapon.image, (90, 77))
+            sprite.image = pygame.transform.scale(self.player.active_weapon.get_img(), (90, 77))
         else:
             sprite.image = pygame.transform.scale(load_image("empty_weapon.png"), (70, 70))
         sprite.rect = sprite.image.get_rect()
@@ -142,6 +127,31 @@ class Board:
 
         font = pygame.font.Font(None, 70)
         string_rendered = font.render(str(len(self.player.get_hp_potion())), 1, pygame.Color('white'))
+        intro_rect = string_rendered.get_rect()
+        intro_rect.y = y_hp + 30
+        intro_rect.x = x + 85
+        sc.blit(string_rendered, intro_rect)
+        
+        healing_potion_group.add(sprite)
+        healing_potion_group.draw(sc)
+        # draw key (рисование ключа)
+        healing_potion_group = pygame.sprite.Group()
+        sprite = pygame.sprite.Sprite()
+        sprite.image = pygame.transform.scale(load_image("key.png"), (60, 75))
+        sprite.rect = sprite.image.get_rect()
+        sprite.rect.x = x
+        y_hp = y + s_h + 220
+        sprite.rect.y = y_hp
+        
+        font = pygame.font.Font(None, 50)
+        string_rendered = font.render("x", 1, pygame.Color('black'))
+        intro_rect = string_rendered.get_rect()
+        intro_rect.y = y_hp + 42
+        intro_rect.x = x + 60
+        sc.blit(string_rendered, intro_rect)
+
+        font = pygame.font.Font(None, 70)
+        string_rendered = font.render(str(self.player.get_key()), 1, pygame.Color('white'))
         intro_rect = string_rendered.get_rect()
         intro_rect.y = y_hp + 30
         intro_rect.x = x + 85
@@ -298,36 +308,36 @@ class Board:
     def set_items(self):
         # предметы на спавне
         if self.start_coords[0] == 0 and self.start_coords[1] == self.width - 1:  # right top
-            self.items.append(Sword(1, self.width - 1, self.items_group))
-            self.items.append(Bow(0, self.width - 2, self.items_group))
+            self.items.append(Sword(1, self.width - 1, self.all_sprites, size=self.cell_size))
+            self.items.append(Bow(0, self.width - 2, self.all_sprites, size=self.cell_size))
             
         elif self.start_coords[0] == 0 and self.start_coords[1] == 0:  # left top
-            self.items.append(Sword(1, 0, self.items_group))
-            self.items.append(Bow(0, 1, self.items_group))
+            self.items.append(Sword(1, 0, self.all_sprites, size=self.cell_size))
+            self.items.append(Bow(0, 1, self.all_sprites, size=self.cell_size))
             
         elif self.start_coords[0] == 0:  # top
-            self.items.append(Sword(0, self.start_coords[1] + 1, self.items_group))
-            self.items.append(Bow(0, self.start_coords[1] - 1, self.items_group))
+            self.items.append(Sword(0, self.start_coords[1] + 1, self.all_sprites, size=self.cell_size))
+            self.items.append(Bow(0, self.start_coords[1] - 1, self.all_sprites, size=self.cell_size))
             
         elif self.start_coords[0] == self.width - 1 and self.start_coords[1] == 0:  # left bottom
-            self.items.append(Sword(self.width - 1, 1, self.items_group))
-            self.items.append(Bow(self.width - 2, 0, self.items_group))
+            self.items.append(Sword(self.width - 1, 1, self.all_sprites, size=self.cell_size))
+            self.items.append(Bow(self.width - 2, 0, self.all_sprites, size=self.cell_size))
             
         elif self.start_coords[1] == 0:  # left
-            self.items.append(Sword(self.start_coords[0] + 1, 0, self.items_group))
-            self.items.append(Bow(self.start_coords[0] - 1, 0, self.items_group))
+            self.items.append(Sword(self.start_coords[0] + 1, 0, self.all_sprites, size=self.cell_size))
+            self.items.append(Bow(self.start_coords[0] - 1, 0, self.all_sprites, size=self.cell_size))
 
         elif self.start_coords[0] == self.width - 1 and self.start_coords[1] == self.width - 1:  # right bottom
-            self.items.append(Sword(self.width - 2, self.width - 1, self.items_group))
-            self.items.append(Bow(self.width - 1, self.width - 2, self.items_group))
+            self.items.append(Sword(self.width - 2, self.width - 1, self.all_sprites, size=self.cell_size))
+            self.items.append(Bow(self.width - 1, self.width - 2, self.all_sprites, size=self.cell_size))
 
         elif self.start_coords[0] == self.width - 1:  # bottom
-            self.items.append(Sword(self.width - 1, self.start_coords[1] + 1, self.items_group))
-            self.items.append(Bow(self.width - 1, self.start_coords[1] - 1, self.items_group))
+            self.items.append(Sword(self.width - 1, self.start_coords[1] + 1, self.all_sprites, size=self.cell_size))
+            self.items.append(Bow(self.width - 1, self.start_coords[1] - 1, self.all_sprites, size=self.cell_size))
 
         elif self.start_coords[1] == self.width - 1:  # right
-            self.items.append(Sword(self.start_coords[0] - 1, self.width - 1, self.items_group))
-            self.items.append(Bow(self.start_coords[0] + 1, self.width - 1, self.items_group))
+            self.items.append(Sword(self.start_coords[0] - 1, self.width - 1, self.all_sprites, size=self.cell_size))
+            self.items.append(Bow(self.start_coords[0] + 1, self.width - 1, self.all_sprites, size=self.cell_size))
 
         print(self.items)
 
@@ -356,9 +366,9 @@ class Board:
 
             to_check.append((coord, coord2))
             if i > 6:
-                monster = Monster_speed(coord, coord2)
+                monster = Monster_speed(coord, coord2, self.all_sprites, size=self.cell_size)
             else:
-                monster = Monster(coord, coord2)
+                monster = Monster_default(coord, coord2, self.all_sprites, size=self.cell_size)
             all_monsters.append(monster)
 
         self.monsters = all_monsters
@@ -397,13 +407,12 @@ class Board:
             if not i.can_move(self.player.get_coord(), self.board):
                 continue
             move = i.move(self.player.get_coord(), self.board, self.monsters, self.items)
-            print(move)
             if move:
                 for j in range(i.get_speed()):
                     if not move:
                         break
                     i.set_move(move.pop(0))
-                # raise Exception('I know Python!')
+        # raise Exception('I know Python!')
 
     def interact_monsters(self):
         for i in self.monsters:
@@ -426,8 +435,10 @@ class Board:
                     old = self.player.chang_weapon(i)
                     x, y = i.get_coord()
                     i.set_coord(None, None)
+                    i.none_draw()
                     if old:
                         old.set_coord(x, y)
+                        old.true_draw(x, y)
                     return None
             elif issubclass(i.__class__, Chest):
                 print("chest")
@@ -477,6 +488,11 @@ class Board:
                     self.player.set_loot(i.get_loot())
                     self.player.set_exp(i.get_exp())
                     self.monsters.pop(self.monsters.index(i))
+                    sp = list(self.all_sprites)
+                    sp.pop(sp.index(i))
+                    self.all_sprites = pygame.sprite.Group()
+                    for i in sp:
+                        self.all_sprites.add(i)
                 return None
 
     def save_game(self):

@@ -1,6 +1,13 @@
-class Monster:
-    def __init__(self, x, y, hp=2, speed=1, damage=1, field_view=5, loot=None, exp=5, time_move=2):
-        # чтобы не приходилось вводить всё каждый раз + если создавать особенного монстра, чтобы было понятно что где
+import pygame
+
+
+pygame.init()
+screen = pygame.display.set_mode((1, 1))
+
+
+class Monster(pygame.sprite.Sprite):
+    def __init__(self, x, y, group, hp=2, speed=1, damage=1, field_view=5, loot=None, exp=5, time_move=2):
+        super().__init__(*group)
         self.hp = hp
         self.speed = speed
         self.damage = damage
@@ -14,6 +21,9 @@ class Monster:
 
     def get_hp(self):
         return self.hp
+
+    def update_img(self, move):
+        pass
 
     def set_hp(self, damage):
         self.hp -= damage
@@ -36,6 +46,7 @@ class Monster:
             self.y -= 1
         if move == "right":
             self.y += 1
+        self.update_img(move)
 
     def get_damage(self):
         return self.damage

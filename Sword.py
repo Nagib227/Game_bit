@@ -3,16 +3,24 @@ from Load_image import load_image
 import pygame
 
 
-pygame.init()
-screen = pygame.display.set_mode((0, 0))
-
-
 class Sword(Weapon):
-    image = load_image("sword.png", -1)
+    image = load_image("sword.png")
     
-    def __init__(self, x, y, *group):
+    def __init__(self, x, y, *group, size=30):
         super().__init__(x, y, 2, 1, group)
-        self.image = Sword.image
+        self.image = pygame.transform.scale(Sword.image, (size, size))
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        self.rect.x = y * size
+        self.rect.y = x * size
+        self.size = size
+
+    def get_img(self):
+        return Sword.image
+
+    def none_draw(self):
+        self.rect.x = -self.size
+        self.rect.y = -self.size
+
+    def true_draw(self, x, y):
+        self.rect.x = y * self.size
+        self.rect.y = x * self.size
