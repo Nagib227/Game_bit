@@ -1,5 +1,4 @@
 import pygame
-import os
 
 from Game_Board import Board
 from Bit import Bit
@@ -10,7 +9,6 @@ from Load_image import load_image
 from VARIABLES import *
 
 def main(btn="new"):
-
     time = TIME
     time_Move = TIME_MOVE
     pygame.init()
@@ -29,15 +27,14 @@ def main(btn="new"):
     end = True
     start = False
     bits_group = pygame.sprite.Group()
-    Bit(-30, height - 100, round((width - 40) / round(time / 10 * 2.05)), (width - 40) // 2, bits_group, rot=False)
-    Bit(width + 0, height - 100, -round((width - 40) / round(time / 10 * 2.05)), (width - 40) // 2, bits_group, rot=True)
+    Bit(-50, height - 110, round((width - 40) / round(time / 10 * 2.05)), (width - 40) // 2, bits_group, rot=False)
+    Bit(width + 20, height - 110, -round((width - 40) / round(time / 10 * 2.05)), (width - 40) // 2, bits_group, rot=True)
     Heart_bit((width - 110) // 2, height - 120, bits_group)
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
                 END()  # !!!!!!!!!!!!!!
             if event.type == BIT:
                 for i in bits_group:
