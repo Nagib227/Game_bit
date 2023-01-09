@@ -356,7 +356,7 @@ class Board:
                 while coord2 >= self.height:
                     coord2 -= 15
 
-                if (coord, coord2) in to_check or self.board[coord][coord2] in [20, 11]:
+                if (coord, coord2) in to_check or self.board[coord][coord2] in [20, 11] or self.chest.x == coord and self.chest.y == coord2:
                     Right_pos = False
 
             to_check.append((coord, coord2))
@@ -440,7 +440,8 @@ class Board:
                 x = abs(i.get_coord()[0] - self.player.get_coord()[0])
                 y = abs(i.get_coord()[1] - self.player.get_coord()[1])
                 if x <= 1 and y <= 1 and x * y == 0 and not i.is_opened:
-                    self.items.append(self.open_chest(i))
+                    hp = self.open_chest(i)
+                    self.items.append(hp)
             if issubclass(i.__class__, Healing_potion):
                 x = i.get_coord()[0] == self.player.get_coord()[0]
                 y = i.get_coord()[1] == self.player.get_coord()[1]
@@ -448,6 +449,11 @@ class Board:
                     print("potion")
                     self.player.set_loot([i])
                     del self.items[self.items.index(i)]
+                    sp = list(self.all_sprites)
+                    sp.pop(sp.index(i))
+                    self.all_sprites = pygame.sprite.Group()
+                    for i in sp:
+                        self.all_sprites.add(i)
             #         i.set_coord(None, None)
             #         self.player.current_potion = i
 
@@ -463,7 +469,7 @@ class Board:
 
     def open_chest(self, chest):
         chest.is_opened = True
-        self.items.append(chest.get_item())
+        self.items.append(chest.get_item(self.all_sprites))
         self.player.set_exp(chest.exp)
         print('opened')
 

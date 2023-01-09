@@ -9,7 +9,6 @@ class Healing_potion(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = y * size
         self.rect.y = x * size
-        self.size = size
         self.x = x
         self.y = y
         self.heal = heal
