@@ -53,11 +53,6 @@ class Board:
                 elif self.board[j][i] == 20:
                     pygame.draw.rect(field, (100, 100, 100), (i * self.cell_size, j * self.cell_size,
                                                               self.cell_size, self.cell_size), 0)
-
-        # сундук
-        pygame.draw.rect(field, (128, 64, 48), (self.chest.y * self.cell_size, self.chest.x * self.cell_size,
-                                                self.cell_size, self.cell_size), 0)
-
         # предметы на земле
         self.all_sprites.draw(field)
 
@@ -135,7 +130,7 @@ class Board:
         healing_potion_group.add(sprite)
         healing_potion_group.draw(sc)
         # draw key (рисование ключа)
-        healing_potion_group = pygame.sprite.Group()
+        key_group = pygame.sprite.Group()
         sprite = pygame.sprite.Sprite()
         sprite.image = pygame.transform.scale(load_image("key.png"), (60, 75))
         sprite.rect = sprite.image.get_rect()
@@ -157,8 +152,8 @@ class Board:
         intro_rect.x = x + 85
         sc.blit(string_rendered, intro_rect)
         
-        healing_potion_group.add(sprite)
-        healing_potion_group.draw(sc)
+        key_group.add(sprite)
+        key_group.draw(sc)
 
     def get_click(self, mouse_pos):
         cell_coords = self.get_cell(mouse_pos)
@@ -218,7 +213,7 @@ class Board:
             Done = self.check_rightness(new_board)
 
         self.board = new_board
-        self.chest = Chest(chest_coords)##########
+        self.chest = Chest(chest_coords, self.all_sprites, size=self.cell_size)##########
 
         # генерация предметов на земле
         self.set_items()
@@ -361,7 +356,7 @@ class Board:
                 while coord2 >= self.height:
                     coord2 -= 15
 
-                if (coord, coord2) in to_check or self.board[coord][coord2] in [20, 11, 'Chest']:
+                if (coord, coord2) in to_check or self.board[coord][coord2] in [20, 11]:
                     Right_pos = False
 
             to_check.append((coord, coord2))
