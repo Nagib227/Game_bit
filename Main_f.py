@@ -9,6 +9,7 @@ from Load_image import load_image
 from VARIABLES import *
 
 def main(btn="new"):
+
     time = TIME
     time_Move = TIME_MOVE
     pygame.init()
@@ -35,6 +36,7 @@ def main(btn="new"):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
                 END()  # !!!!!!!!!!!!!!
             if event.type == BIT:
                 for i in bits_group:

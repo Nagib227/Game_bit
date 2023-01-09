@@ -41,10 +41,7 @@ class Board:
         field = pygame.Surface((self.width * self.cell_size, self.height * self.cell_size))
         for j in range(self.height):
             for i in range(self.width):
-                if self.board[j][i] == 0:
-                    pygame.draw.rect(field, (255, 0, 255), (i * self.cell_size, j * self.cell_size,
-                                                            self.cell_size, self.cell_size), 1)
-                elif self.board[j][i] == 11:
+                if self.board[j][i] == 11:
                     pygame.draw.rect(field, (255, 255, 0), (i * self.cell_size, j * self.cell_size,
                                                             self.cell_size, self.cell_size), 0)
                 elif self.board[j][i] == 12:
@@ -136,18 +133,18 @@ class Board:
         y_hp = y + s_h + 20 + 105
         sprite.rect.y = y_hp
         
-        font = pygame.font.Font(None, 70)
+        font = pygame.font.Font(None, 50)
         string_rendered = font.render("x", 1, pygame.Color('black'))
         intro_rect = string_rendered.get_rect()
-        intro_rect.y = y_hp + 32
-        intro_rect.x = x + 65
+        intro_rect.y = y_hp + 42
+        intro_rect.x = x + 60
         sc.blit(string_rendered, intro_rect)
 
-        font = pygame.font.Font(None, 120)
+        font = pygame.font.Font(None, 70)
         string_rendered = font.render(str(len(self.player.get_hp_potion())), 1, pygame.Color('white'))
         intro_rect = string_rendered.get_rect()
-        intro_rect.y = y_hp + 5
-        intro_rect.x = x + 95
+        intro_rect.y = y_hp + 30
+        intro_rect.x = x + 85
         sc.blit(string_rendered, intro_rect)
         
         healing_potion_group.add(sprite)
@@ -206,7 +203,7 @@ class Board:
             Done = self.check_rightness(new_board)
 
         self.board = new_board
-        self.chest = Chest(chest_coords)
+        self.chest = Chest(chest_coords)##########
 
         # генерация предметов на земле
         self.set_items()

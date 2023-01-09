@@ -5,5 +5,5 @@ from Main_f import main
 if __name__ == "__main__":
     main(start_window())
     while True:
-        main()
+        main(start_window())
  
