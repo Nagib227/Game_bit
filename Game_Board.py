@@ -173,8 +173,13 @@ class Board:
     def randomize(self, num):
         num1 = bin(int(num))[2:]
         num3 = num2 = str(num1)
-        num2 += '0' * int(num[-5])
-        num3 += '0' * int(num[-5:-3])
+        try:
+            num2 += '0' * int(num[-5])
+            num3 += '0' * int(num[-5:-3])
+        except Exception:
+            num2 += '0' * 8
+            num3 += '0' * 25
+
         next_num = str(sum([int(num1, 2), int(num2, 2), int(num3, 2)]))[5:26]
         if num == next_num:
             next_num = self.randomize(num + '01100000000')
@@ -398,7 +403,7 @@ class Board:
                     if not move:
                         break
                     i.set_move(move.pop(0))
-                # raise Exception('I know Python!')
+                raise Exception('I know Python!')
 
     def interact_monsters(self):
         for i in self.monsters:
