@@ -348,7 +348,7 @@ class Board:
                 while coord2 >= self.height:
                     coord2 -= 15
 
-                if (coord, coord2) in to_check or self.board[coord][coord2] in [20, 11] or self.chest.x == coord and self.chest.y == coord2:
+                if (coord, coord2) in to_check or self.board[coord][coord2] in [20, 11, 'Chest']:
                     Right_pos = False
 
             to_check.append((coord, coord2))
