@@ -315,7 +315,9 @@ class Board:
                      [20, 10, 'Chest', 10, 20],
                      [20, 10, 10, 10, 20],
                      [10, 10, 20, 10, 10]]
-        second_board = self.board
+        second_board = []
+        for i in self.board:
+            second_board.append(i[:])
         self.seed = self.randomize(self.seed)
 
         coord = int(self.seed[2:4])
