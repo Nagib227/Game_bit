@@ -102,7 +102,7 @@ class Monster(pygame.sprite.Sprite):
         pozIn = (self.x, self.y)
         labirint = field
         # path = [[x if x == 0 else -1 for x in y] for y in labirint]
-        path = [[0 if x in [10] else -1 for x in y] for y in labirint]
+        path = [[0 if x in [10, 12] else -1 for x in y] for y in labirint]
         for i in monsters:
             path[i.x][i.y] = -1
         for i in items:

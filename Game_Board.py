@@ -1,4 +1,5 @@
 import pygame
+import random
 from datetime import datetime
 from Gauss_noize import GaussNoize
 
@@ -23,10 +24,21 @@ class Board:
         self.height = board_height
         # значения по умолчанию
         self.all_sprites = pygame.sprite.Group()
-                
+
+                    
         self.left = 20
         self.top = 20
         self.cell_size = 30
+
+        self.floor = pygame.transform.scale(load_image("ground.png"), (self.cell_size, self.cell_size))
+        self.start = pygame.transform.scale(load_image("spawn.png"), (self.cell_size, self.cell_size))
+        self.finish = pygame.transform.scale(load_image("exit_1.png"), (self.cell_size, self.cell_size))
+        self.exit = pygame.transform.scale(load_image("exit_2.png"), (self.cell_size, self.cell_size))
+        
+        self.wall_1 = pygame.transform.scale(load_image("wall_1.png"), (self.cell_size, self.cell_size))
+        self.wall_2 = pygame.transform.scale(load_image("wall_2.png"), (self.cell_size, self.cell_size))
+        self.wall_3 = pygame.transform.scale(load_image("wall_3.png"), (self.cell_size, self.cell_size))
+        self.wall_floor = pygame.transform.scale(load_image("wall_floor.png"), (self.cell_size, self.cell_size))
 
         self.map_save = map_save
 
@@ -39,21 +51,52 @@ class Board:
 
     def render(self, screen, can_move):
         field = pygame.Surface((self.width * self.cell_size, self.height * self.cell_size))
+        floor_group = pygame.sprite.Group()
         for j in range(self.height):
             for i in range(self.width):
                 if self.board[j][i] == 11:
-                    pygame.draw.rect(field, (255, 255, 0), (i * self.cell_size, j * self.cell_size,
-                                                            self.cell_size, self.cell_size), 0)
+                    sprite = pygame.sprite.Sprite()
+                    sprite.image = self.start
+                    sprite.rect = sprite.image.get_rect()
+                    sprite.rect.x = i * self.cell_size
+                    sprite.rect.y = j * self.cell_size
+                    floor_group.add(sprite)
                 elif self.board[j][i] == 12:
-                    pygame.draw.rect(field, (255, 100, 100), (i * self.cell_size, j * self.cell_size,
-                                                              self.cell_size, self.cell_size), 0)
+                    sprite = pygame.sprite.Sprite()
+                    sprite.image = self.finish
+                    sprite.rect = sprite.image.get_rect()
+                    sprite.rect.x = i * self.cell_size
+                    sprite.rect.y = j * self.cell_size
+                    floor_group.add(sprite)
                 elif self.board[j][i] == 10:
-                    pygame.draw.rect(field, (210, 210, 210), (i * self.cell_size, j * self.cell_size,
-                                                              self.cell_size, self.cell_size), 0)
+                    sprite = pygame.sprite.Sprite()
+                    sprite.image = self.floor
+                    sprite.rect = sprite.image.get_rect()
+                    sprite.rect.x = i * self.cell_size
+                    sprite.rect.y = j * self.cell_size
+                    floor_group.add(sprite)
                 elif self.board[j][i] == 20:
-                    pygame.draw.rect(field, (100, 100, 100), (i * self.cell_size, j * self.cell_size,
-                                                              self.cell_size, self.cell_size), 0)
-        # предметы на земле
+                    sprite = pygame.sprite.Sprite()
+                    sprite.image = self.wall_floor
+                    sprite.rect = sprite.image.get_rect()
+                    sprite.rect.x = i * self.cell_size
+                    sprite.rect.y = j * self.cell_size
+                    floor_group.add(sprite)
+                    sprite = pygame.sprite.Sprite()
+                    sprite.image = self.wall_3
+                    sprite.rect = sprite.image.get_rect()
+                    sprite.rect.x = i * self.cell_size
+                    sprite.rect.y = j * self.cell_size
+                    floor_group.add(sprite)
+                    
+        sprite = pygame.sprite.Sprite()
+        sprite.image = self.exit
+        sprite.rect = sprite.image.get_rect()
+        sprite.rect.x = self.finish_coords[1] * self.cell_size
+        sprite.rect.y = self.finish_coords[0] * self.cell_size
+        floor_group.add(sprite)
+        
+        floor_group.draw(field)
         self.all_sprites.draw(field)
 
         screen.blit(field, (self.left, self.top))
@@ -348,7 +391,7 @@ class Board:
                 while coord2 >= self.height:
                     coord2 -= 15
 
-                if (coord, coord2) in to_check or self.board[coord][coord2] in [20, 11, 'Chest']:
+                if (coord, coord2) in to_check or self.board[coord][coord2] in [20, 11] or self.chest.x == coord and self.chest.y == coord2:
                     Right_pos = False
 
             to_check.append((coord, coord2))
