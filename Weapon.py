@@ -6,12 +6,12 @@ screen = pygame.display.set_mode((1, 1))
 
 
 class Weapon(pygame.sprite.Sprite):
-    def __init__(self, x, y, damage, field_atack,  group):
+    def __init__(self, x, y, damage, field_attack,  group):
         super().__init__(*group)
         self.x = x
         self.y = y
         self.damage = damage
-        self.field_atack = field_atack
+        self.field_attack = field_attack
 
     def set_coord(self, x, y):
         self.x = x
@@ -24,7 +24,7 @@ class Weapon(pygame.sprite.Sprite):
         return self.damage
 
     def get_field_attack(self):
-        return self.field_atack
+        return self.field_attack
 '''
     def can_atack(self, coord_pl, coord_atack, field, items):
         coord_atack = coord_atack[::-1]

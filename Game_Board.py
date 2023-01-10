@@ -1,5 +1,5 @@
 import pygame
-import random
+import sqlite3
 from datetime import datetime
 from Gauss_noize import GaussNoize
 
@@ -12,44 +12,45 @@ from Chest import Chest
 from Healing_potion import Healing_potion
 from Lose import Lose
 
-from END import END
 from Weapon import Weapon
 from Load_image import load_image
 
 
 class Board:
     # создание поля
-    def __init__(self, board_width, board_height, map_save=False):
+    def __init__(self, board_width, board_height, map_save=False, load_game=False):
         self.width = board_width
         self.height = board_height
         # значения по умолчанию
         self.all_sprites = pygame.sprite.Group()
 
-                    
         self.left = 20
         self.top = 20
-        self.cell_size = 30
+        self.cell_size = 40
 
         self.floor = pygame.transform.scale(load_image("ground.png"), (self.cell_size, self.cell_size))
         self.start = pygame.transform.scale(load_image("spawn.png"), (self.cell_size, self.cell_size))
         self.finish = pygame.transform.scale(load_image("exit_1.png"), (self.cell_size, self.cell_size))
         self.exit = pygame.transform.scale(load_image("exit_2.png"), (self.cell_size, self.cell_size))
         
-        self.wall_1 = pygame.transform.scale(load_image("wall_1.png"), (self.cell_size, self.cell_size))
-        self.wall_2 = pygame.transform.scale(load_image("wall_2.png"), (self.cell_size, self.cell_size))
-        self.wall_3 = pygame.transform.scale(load_image("wall_3.png"), (self.cell_size, self.cell_size))
+        # self.wall_1 = pygame.transform.scale(load_image("wall_1.png"), (self.cell_size, self.cell_size))
+        # self.wall_2 = pygame.transform.scale(load_image("wall_2.png"), (self.cell_size, self.cell_size))
+        # self.wall_3 = pygame.transform.scale(load_image("wall_3.png"), (self.cell_size, self.cell_size))
         self.wall_floor = pygame.transform.scale(load_image("wall_floor.png"), (self.cell_size, self.cell_size))
 
-        self.map_save = map_save
+        if load_game:
+            self.load_game()
+        else:
+            self.map_save = map_save
 
-        self.seed = self.get_seed()
-        self.create_map()
+            self.seed = self.get_seed()
+            self.create_map()
 
     # 0 - пустые клетки
     # 1 - группа клеток по которым можно ходить: 10 - земля. 11 - клетки спавна. 12 - клетки выхода
     # 20 - клетки стен
 
-    def render(self, screen, can_move):
+    def render(self, screen):
         field = pygame.Surface((self.width * self.cell_size, self.height * self.cell_size))
         floor_group = pygame.sprite.Group()
         for j in range(self.height):
@@ -61,6 +62,7 @@ class Board:
                     sprite.rect.x = i * self.cell_size
                     sprite.rect.y = j * self.cell_size
                     floor_group.add(sprite)
+
                 elif self.board[j][i] == 12:
                     sprite = pygame.sprite.Sprite()
                     sprite.image = self.finish
@@ -68,6 +70,7 @@ class Board:
                     sprite.rect.x = i * self.cell_size
                     sprite.rect.y = j * self.cell_size
                     floor_group.add(sprite)
+
                 elif self.board[j][i] == 10:
                     sprite = pygame.sprite.Sprite()
                     sprite.image = self.floor
@@ -75,6 +78,7 @@ class Board:
                     sprite.rect.x = i * self.cell_size
                     sprite.rect.y = j * self.cell_size
                     floor_group.add(sprite)
+
                 elif self.board[j][i] == 20:
                     sprite = pygame.sprite.Sprite()
                     sprite.image = self.wall_floor
@@ -82,12 +86,12 @@ class Board:
                     sprite.rect.x = i * self.cell_size
                     sprite.rect.y = j * self.cell_size
                     floor_group.add(sprite)
-                    sprite = pygame.sprite.Sprite()
-                    sprite.image = self.wall_3
-                    sprite.rect = sprite.image.get_rect()
-                    sprite.rect.x = i * self.cell_size
-                    sprite.rect.y = j * self.cell_size
-                    floor_group.add(sprite)
+
+                    # sprite.image = self.wall_3
+                    # sprite.rect = sprite.image.get_rect()
+                    # sprite.rect.x = i * self.cell_size
+                    # sprite.rect.y = j * self.cell_size
+                    # floor_group.add(sprite)
                     
         sprite = pygame.sprite.Sprite()
         sprite.image = self.exit
@@ -102,7 +106,7 @@ class Board:
         screen.blit(field, (self.left, self.top))
 
     def draw_interface(self, sc, x=25, y=25, s_h=50):
-        # draw heart (рисование сердец)
+        # draw hearts (рисование сердец)
         hearts_group = pygame.sprite.Group()
         hp = self.player.hp
         false_hp = self.player.get_max_heal() - self.player.hp
@@ -532,10 +536,54 @@ class Board:
                 return None
 
     def save_game(self):
-        pass
+        bd = sqlite3.connect('data/Game_save.db')
+        cur = bd.cursor()
+
+        # карта, точка старта/финиша, игрок, сундук, предметы, монстры
+
+        # карта:
+        board_in_string = ''
+        for i in range(self.height):
+            row = ', '.join([str(j) for j in self.board[i]])
+            board_in_string += row + ";"
+        board_in_string = board_in_string[:-1]
+        print(board_in_string)
+        start = f'{self.start_coords[0]}, {self.start_coords[1]}'
+        finish = f'{self.finish_coords[0]}, {self.finish_coords[1]}'
+        print(start, finish)
+
+        # игрок
+        potions = []
+        for potion in self.player.get_hp_potion():
+            potions.append((str(potion.x), str(potion.y)))
+
+        player = f'{str(self.player.x)}, {str(self.player.y)}, {str(self.player.hp)}, {str(self.player.key)}, ' \
+                 f'{str(self.player.active_weapon)}, {str(potions)}, {str(self.player.get_exp())}'
+        print(player)
+
+        # сундук
+        chest = f'{self.chest.x}, {self.chest.y}, {self.chest.is_opened}'
+        print(chest)
+
+        # предметы
+        weapons = ''
+        potions = ''
+        for item in self.items:
+            if isinstance(item, Weapon):
+                weapons += f'{str(item.x)}, {str(item.y)}, {str(item.damage)}, {str(item.field_attack)}' + ';'
+            elif isinstance(item, Healing_potion):
+                potions += f'{str(item.x)}, {str(item.y)}, {str(item.heal)}'
+
+        weapons = weapons[:-1]
+        print(weapons)
+        print(potions)
 
     def load_game(self):
         pass
+        # self.player = Player(x, y, self.all_sprites, hp=hp, keys=keys, weapon=weapon, potion=potion)
+        # self.chest = Chest((x, y), self.all_sprites, is_opened=is_opened)
+        # weapon = Weapon(x, y, damage, field_attack, self.all_sprites)
+        # potion = Healing_potion(x, y, self.all_sprites, heal=heal)
 
     def has_path(self, x1, y1, x2, y2):
         """Метод для определения доступности из клетки (x1, y1)

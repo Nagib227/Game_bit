@@ -32,6 +32,7 @@ class Fon(pygame.sprite.Sprite):
             self.image = pygame.transform.scale(load_image('fon_1.png'), (S * 30 + 40, S * 30 + 40))
             self.fon = 1
 
+
 def start_window():
     pygame.init()
     s = S
@@ -56,7 +57,7 @@ def start_window():
     btn = pygame.transform.scale(load_image('btn_start.png'), (150, 75))
     sc.blit(btn, (200, 450))
     clock = pygame.time.Clock()
-    FPS = 1.5
+    FPS = 1
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

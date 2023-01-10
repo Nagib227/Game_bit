@@ -8,14 +8,16 @@ from END import END
 from Load_image import load_image
 from VARIABLES import *
 
+
 def main(btn="new"):
     time = TIME
     time_Move = TIME_MOVE
     pygame.init()
     s = S
-    size = width, height = s * 30 + 40, s * 30 + 40
+    size = width, height = s * 40 + 40, s * 40 + 40
     sc = pygame.display.set_mode(size)
     board = Board(s, s, map_save=False)  # при передаче в map_save True, то программа будет сохранять удачные карты
+    board.save_game()  # delete
     NOT_MOVE = pygame.USEREVENT + 1
     MOVE = pygame.USEREVENT + 2
     BIT = pygame.USEREVENT + 3
@@ -101,7 +103,7 @@ def main(btn="new"):
             pygame.time.set_timer(MOVE, 0)
             pygame.time.set_timer(NOT_MOVE, time)
         sc.fill((0, 0, 0))
-        board.render(sc, move)
+        board.render(sc)
         board.draw_interface(sc)
         bits_group.draw(sc)
         pygame.display.flip()
