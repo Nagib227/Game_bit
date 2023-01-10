@@ -129,7 +129,7 @@ class Monster(pygame.sprite.Sprite):
                         continue
                     if x + dx < 0 or x + dx >= len(field[0]) or y + dy < 0 or y + dy >= len(field):
                         continue
-                    if field[x + dx][y + dy] in [10]:
+                    if field[x + dx][y + dy] in [10, 12]:
                         dn = d.get((x + dx, y + dy), -1)
                         if dn == -1:
                             d[(x + dx, y + dy)] = d.get((x, y), -1) + 1

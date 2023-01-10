@@ -19,7 +19,9 @@ from Load_image import load_image
 
 class Board:
     # создание поля
-    def __init__(self, board_width, board_height, map_save=False):
+    def __init__(self, board_width, board_height, map_save=False, exp=0, hp=[]):
+        self.hp = hp
+        self.exp = exp
         self.width = board_width
         self.height = board_height
         # значения по умолчанию
@@ -33,7 +35,12 @@ class Board:
         self.floor = pygame.transform.scale(load_image("ground.png"), (self.cell_size, self.cell_size))
         self.start = pygame.transform.scale(load_image("spawn.png"), (self.cell_size, self.cell_size))
         self.finish = pygame.transform.scale(load_image("exit_1.png"), (self.cell_size, self.cell_size))
-        self.exit = pygame.transform.scale(load_image("exit_2.png"), (self.cell_size, self.cell_size))
+        
+        self.exit = pygame.sprite.Sprite()
+        self.exit.image = pygame.transform.scale(load_image("exit_2.png"), (self.cell_size, self.cell_size))
+        self.exit.rect = self.exit.image.get_rect()
+        self.exit.mask = pygame.mask.from_surface(self.exit.image)
+        self.all_sprites.add(self.exit)
         
         self.wall_1 = pygame.transform.scale(load_image("wall_1.png"), (self.cell_size, self.cell_size))
         self.wall_2 = pygame.transform.scale(load_image("wall_2.png"), (self.cell_size, self.cell_size))
@@ -89,14 +96,8 @@ class Board:
                     sprite.rect.y = j * self.cell_size
                     floor_group.add(sprite)
                     
-        sprite = pygame.sprite.Sprite()
-        sprite.image = self.exit
-        sprite.rect = sprite.image.get_rect()
-        sprite.rect.x = self.finish_coords[1] * self.cell_size
-        sprite.rect.y = self.finish_coords[0] * self.cell_size
-        floor_group.add(sprite)
-        
         floor_group.draw(field)
+        
         self.all_sprites.draw(field)
 
         screen.blit(field, (self.left, self.top))
@@ -240,7 +241,12 @@ class Board:
             Done = self.check_rightness(self.board)
             if not Done:
                 self.board = [[0] * self.width for _ in range(self.height)]
-
+        
+        ##############
+        self.exit.rect.x = self.finish_coords[1] * self.cell_size
+        self.exit.rect.y = self.finish_coords[0] * self.cell_size
+        ##############
+        
         # рандомный сундук
         Done = False
         while not Done:
@@ -375,7 +381,7 @@ class Board:
 
     # размещение сущностей
     def set_entities(self):
-        self.player = Player(self.start_coords[0], self.start_coords[1], self.all_sprites, size=self.cell_size)
+        self.player = Player(self.start_coords[0], self.start_coords[1], self.all_sprites, size=self.cell_size, exp=self.exp, hp_potion=self.hp)
 
 
         all_monsters = []
@@ -456,6 +462,9 @@ class Board:
                     return Lose(self.player.get_exp())
 
     def interact_items(self):
+        if pygame.sprite.collide_mask(self.exit, self.player):
+            if self.player.get_key() == 3:
+                return [self.player.get_exp(), self.player.get_hp_potion()]
         for i in self.items:
             if i.get_coord()[0] is None:
                 continue

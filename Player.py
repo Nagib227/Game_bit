@@ -3,7 +3,7 @@ import pygame
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, *group, hp=10, max_hp=10, size=30):
+    def __init__(self, x, y, *group, hp=10, max_hp=10, size=30, exp=0, hp_potion=[]):
         super().__init__(*group)
         self.image = pygame.transform.scale(load_image("player_down.png"), (size, size))
         self.rect = self.image.get_rect()
@@ -16,9 +16,10 @@ class Player(pygame.sprite.Sprite):
         self.hp = hp
         self.max_hp = max_hp
         self.active_weapon = None
-        self.hp_potion = []
+        self.hp_potion = hp_potion
         self.current_potion = None
-        self.exp = 0
+        self.exp = exp
+        self.mask = pygame.mask.from_surface(self.image)
 
     def get_hp_potion(self):
         return self.hp_potion
