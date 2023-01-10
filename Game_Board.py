@@ -56,14 +56,6 @@ class Board:
         # предметы на земле
         self.all_sprites.draw(field)
 
-        # игрок
-        if can_move:
-            pygame.draw.rect(field, (100, 255, 100), (self.player.y * self.cell_size, self.player.x * self.cell_size,
-                                                      self.cell_size, self.cell_size), 0)
-        else:
-            pygame.draw.rect(field, (100, 100, 255), (self.player.y * self.cell_size, self.player.x * self.cell_size,
-                                                      self.cell_size, self.cell_size), 0)
-
         screen.blit(field, (self.left, self.top))
 
     def draw_interface(self, sc, x=25, y=25, s_h=50):
@@ -338,7 +330,7 @@ class Board:
 
     # размещение сущностей
     def set_entities(self):
-        self.player = Player(self.start_coords[0], self.start_coords[1])
+        self.player = Player(self.start_coords[0], self.start_coords[1], self.all_sprites, size=self.cell_size)
 
 
         all_monsters = []

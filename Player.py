@@ -1,5 +1,15 @@
-class Player:
-    def __init__(self, x, y, hp=10, max_hp=10):
+from Load_image import load_image
+import pygame
+
+
+class Player(pygame.sprite.Sprite):
+    def __init__(self, x, y, *group, hp=10, max_hp=10, size=30):
+        super().__init__(*group)
+        self.image = pygame.transform.scale(load_image("player_down.png"), (size, size))
+        self.rect = self.image.get_rect()
+        self.rect.x = y * size
+        self.rect.y = x * size
+        self.size = size
         self.x = x
         self.y = y
         self.key = 0
@@ -14,6 +24,16 @@ class Player:
         return self.hp_potion
 
     def set_coord(self, x, y):
+        if y - self.y == 1:
+            self.image = pygame.transform.scale(load_image("player_right.png"), (self.size, self.size))
+        elif y - self.y == -1:
+            self.image = pygame.transform.scale(load_image("player_left.png"), (self.size, self.size))
+        elif x - self.x == 1:
+            self.image = pygame.transform.scale(load_image("player_down.png"), (self.size, self.size))
+        elif x - self.x == -1:
+            self.image = pygame.transform.scale(load_image("player_up.png"), (self.size, self.size))
+        self.rect.x = y * self.size
+        self.rect.y = x * self.size
         self.x = x
         self.y = y
 
@@ -65,11 +85,10 @@ class Player:
 
     def can_attack(self, coord_attack, field, items):
         coord_attack = coord_attack[::-1]
-        print(self.get_coord(), "pl")
-        print(coord_attack, "at")
+        x_p = self.y - coord_attack[1]
+        y_p = self.x - coord_attack[0]
         x_point = abs(self.y - coord_attack[1])
         y_point = abs(self.x - coord_attack[0])
-        print(x_point, y_point)
         clos_coord = []
         for i in items:
             if i.__class__.__name__ == "Chest":
@@ -89,4 +108,12 @@ class Player:
                (min(self.x, coord_attack[0]) + i, self.y) in clos_coord:
                 print("f2")
                 return False
+        if x_p > 0:
+            self.image = pygame.transform.scale(load_image("player_left.png"), (self.size, self.size))
+        elif x_p < 0:
+            self.image = pygame.transform.scale(load_image("player_right.png"), (self.size, self.size))
+        elif y_p > 0:
+            self.image = pygame.transform.scale(load_image("player_up.png"), (self.size, self.size))
+        elif y_p < 0:
+            self.image = pygame.transform.scale(load_image("player_down.png"), (self.size, self.size))
         return True
