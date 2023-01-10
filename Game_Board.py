@@ -25,7 +25,8 @@ class Board:
         self.width = board_width
         self.height = board_height
         # значения по умолчанию
-        self.all_sprites = pygame.sprite.Group()
+        self.entities_sprites = pygame.sprite.Group()
+        self.items_sprites = pygame.sprite.Group()
 
                     
         self.left = 20
@@ -40,7 +41,7 @@ class Board:
         self.exit.image = pygame.transform.scale(load_image("exit_2.png"), (self.cell_size, self.cell_size))
         self.exit.rect = self.exit.image.get_rect()
         self.exit.mask = pygame.mask.from_surface(self.exit.image)
-        self.all_sprites.add(self.exit)
+        self.items_sprites.add(self.exit)
         
         self.wall_1 = pygame.transform.scale(load_image("wall_1.png"), (self.cell_size, self.cell_size))
         self.wall_2 = pygame.transform.scale(load_image("wall_2.png"), (self.cell_size, self.cell_size))
@@ -97,8 +98,10 @@ class Board:
                     floor_group.add(sprite)
                     
         floor_group.draw(field)
-        
-        self.all_sprites.draw(field)
+
+        self.items_sprites.draw(field)
+
+        self.entities_sprites.draw(field)
 
         screen.blit(field, (self.left, self.top))
 
@@ -214,13 +217,13 @@ class Board:
     def randomize(self, num):
         num1 = bin(int(num))[2:]
         num3 = num2 = str(num1)
-        try:
-            num2 += '0' * int(num[-5])
-            num3 += '0' * int(num[-5:-3])
-        except Exception:
-            num2 += '0' * 8
-            num3 += '0' * 25
-
+        while True:
+            try:
+                num2 += '0' * int(num[-5])
+                num3 += '0' * int(num[-5:-3])
+            except Exception:
+                continue
+            break
         next_num = str(sum([int(num1, 2), int(num2, 2), int(num3, 2)]))[5:26]
         if num == next_num:
             next_num = self.randomize(num + '01100000000')
@@ -254,7 +257,7 @@ class Board:
             Done = self.check_rightness(new_board)
 
         self.board = new_board
-        self.chest = Chest(chest_coords, self.all_sprites, size=self.cell_size)##########
+        self.chest = Chest(chest_coords, self.items_sprites, size=self.cell_size)##########
 
         # генерация предметов на земле
         self.set_items()
@@ -346,42 +349,42 @@ class Board:
     def set_items(self):
         # предметы на спавне
         if self.start_coords[0] == 0 and self.start_coords[1] == self.width - 1:  # right top
-            self.items.append(Sword(1, self.width - 1, self.all_sprites, size=self.cell_size))
-            self.items.append(Bow(0, self.width - 2, self.all_sprites, size=self.cell_size))
+            self.items.append(Sword(1, self.width - 1, self.items_sprites, size=self.cell_size))
+            self.items.append(Bow(0, self.width - 2, self.items_sprites, size=self.cell_size))
             
         elif self.start_coords[0] == 0 and self.start_coords[1] == 0:  # left top
-            self.items.append(Sword(1, 0, self.all_sprites, size=self.cell_size))
-            self.items.append(Bow(0, 1, self.all_sprites, size=self.cell_size))
+            self.items.append(Sword(1, 0, self.items_sprites, size=self.cell_size))
+            self.items.append(Bow(0, 1, self.items_sprites, size=self.cell_size))
             
         elif self.start_coords[0] == 0:  # top
-            self.items.append(Sword(0, self.start_coords[1] + 1, self.all_sprites, size=self.cell_size))
-            self.items.append(Bow(0, self.start_coords[1] - 1, self.all_sprites, size=self.cell_size))
+            self.items.append(Sword(0, self.start_coords[1] + 1, self.items_sprites, size=self.cell_size))
+            self.items.append(Bow(0, self.start_coords[1] - 1, self.items_sprites, size=self.cell_size))
             
         elif self.start_coords[0] == self.width - 1 and self.start_coords[1] == 0:  # left bottom
-            self.items.append(Sword(self.width - 1, 1, self.all_sprites, size=self.cell_size))
-            self.items.append(Bow(self.width - 2, 0, self.all_sprites, size=self.cell_size))
+            self.items.append(Sword(self.width - 1, 1, self.all_spritems_spritesites, size=self.cell_size))
+            self.items.append(Bow(self.width - 2, 0, self.items_sprites, size=self.cell_size))
             
         elif self.start_coords[1] == 0:  # left
-            self.items.append(Sword(self.start_coords[0] + 1, 0, self.all_sprites, size=self.cell_size))
-            self.items.append(Bow(self.start_coords[0] - 1, 0, self.all_sprites, size=self.cell_size))
+            self.items.append(Sword(self.start_coords[0] + 1, 0, self.items_sprites, size=self.cell_size))
+            self.items.append(Bow(self.start_coords[0] - 1, 0, self.items_sprites, size=self.cell_size))
 
         elif self.start_coords[0] == self.width - 1 and self.start_coords[1] == self.width - 1:  # right bottom
-            self.items.append(Sword(self.width - 2, self.width - 1, self.all_sprites, size=self.cell_size))
-            self.items.append(Bow(self.width - 1, self.width - 2, self.all_sprites, size=self.cell_size))
+            self.items.append(Sword(self.width - 2, self.width - 1, self.items_sprites, size=self.cell_size))
+            self.items.append(Bow(self.width - 1, self.width - 2, self.items_sprites, size=self.cell_size))
 
         elif self.start_coords[0] == self.width - 1:  # bottom
-            self.items.append(Sword(self.width - 1, self.start_coords[1] + 1, self.all_sprites, size=self.cell_size))
-            self.items.append(Bow(self.width - 1, self.start_coords[1] - 1, self.all_sprites, size=self.cell_size))
+            self.items.append(Sword(self.width - 1, self.start_coords[1] + 1, self.items_sprites, size=self.cell_size))
+            self.items.append(Bow(self.width - 1, self.start_coords[1] - 1, self.items_sprites, size=self.cell_size))
 
         elif self.start_coords[1] == self.width - 1:  # right
-            self.items.append(Sword(self.start_coords[0] - 1, self.width - 1, self.all_sprites, size=self.cell_size))
-            self.items.append(Bow(self.start_coords[0] + 1, self.width - 1, self.all_sprites, size=self.cell_size))
+            self.items.append(Sword(self.start_coords[0] - 1, self.width - 1, self.items_sprites, size=self.cell_size))
+            self.items.append(Bow(self.start_coords[0] + 1, self.width - 1, self.items_sprites, size=self.cell_size))
 
         print(self.items)
 
     # размещение сущностей
     def set_entities(self):
-        self.player = Player(self.start_coords[0], self.start_coords[1], self.all_sprites, size=self.cell_size, exp=self.exp, hp_potion=self.hp)
+        self.player = Player(self.start_coords[0], self.start_coords[1], self.entities_sprites, size=self.cell_size, exp=self.exp, hp_potion=self.hp)
 
 
         all_monsters = []
@@ -404,9 +407,9 @@ class Board:
 
             to_check.append((coord, coord2))
             if i > 6:
-                monster = Monster_speed(coord, coord2, self.all_sprites, size=self.cell_size)
+                monster = Monster_speed(coord, coord2, self.entities_sprites, size=self.cell_size)
             else:
-                monster = Monster_default(coord, coord2, self.all_sprites, size=self.cell_size)
+                monster = Monster_default(coord, coord2, self.entities_sprites, size=self.cell_size)
             all_monsters.append(monster)
 
         self.monsters = all_monsters
@@ -463,7 +466,7 @@ class Board:
 
     def interact_items(self):
         if pygame.sprite.collide_mask(self.exit, self.player):
-            if self.player.get_key() == 3:
+            if self.player.get_key() >= 3:
                 return [self.player.get_exp(), self.player.get_hp_potion()]
         for i in self.items:
             if i.get_coord()[0] is None:
@@ -495,11 +498,11 @@ class Board:
                     print("potion")
                     self.player.set_loot([i])
                     del self.items[self.items.index(i)]
-                    sp = list(self.all_sprites)
+                    sp = list(self.items_sprites)
                     sp.pop(sp.index(i))
-                    self.all_sprites = pygame.sprite.Group()
+                    self.items_sprites = pygame.sprite.Group()
                     for i in sp:
-                        self.all_sprites.add(i)
+                        self.items_sprites.add(i)
             #         i.set_coord(None, None)
             #         self.player.current_potion = i
 
@@ -515,7 +518,7 @@ class Board:
 
     def open_chest(self, chest):
         chest.is_opened = True
-        self.items.append(chest.get_item(self.all_sprites))
+        self.items.append(chest.get_item(self.items_sprites))
         self.player.set_exp(chest.exp)
         print('opened')
 
@@ -535,11 +538,11 @@ class Board:
                     self.player.set_loot(i.get_loot())
                     self.player.set_exp(i.get_exp())
                     self.monsters.pop(self.monsters.index(i))
-                    sp = list(self.all_sprites)
+                    sp = list(self.entities_sprites)
                     sp.pop(sp.index(i))
-                    self.all_sprites = pygame.sprite.Group()
+                    self.entities_sprites = pygame.sprite.Group()
                     for i in sp:
-                        self.all_sprites.add(i)
+                        self.entities_sprites.add(i)
                 return None
 
     def save_game(self):

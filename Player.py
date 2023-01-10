@@ -12,7 +12,7 @@ class Player(pygame.sprite.Sprite):
         self.size = size
         self.x = x
         self.y = y
-        self.key = 0
+        self.key = 3
         self.hp = hp
         self.max_hp = max_hp
         self.active_weapon = None
