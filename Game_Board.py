@@ -536,21 +536,16 @@ class Board:
                 return None
 
     def save_game(self):
-        bd = sqlite3.connect('data/Game_save.db')
-        cur = bd.cursor()
-
         # карта, точка старта/финиша, игрок, сундук, предметы, монстры
 
         # карта:
         board_in_string = ''
         for i in range(self.height):
             row = ', '.join([str(j) for j in self.board[i]])
-            board_in_string += row + ";"
+            board_in_string += row + "."
         board_in_string = board_in_string[:-1]
-        print(board_in_string)
         start = f'{self.start_coords[0]}, {self.start_coords[1]}'
         finish = f'{self.finish_coords[0]}, {self.finish_coords[1]}'
-        print(start, finish)
 
         # игрок
         potions = []
@@ -559,24 +554,43 @@ class Board:
 
         player = f'{str(self.player.x)}, {str(self.player.y)}, {str(self.player.hp)}, {str(self.player.key)}, ' \
                  f'{str(self.player.active_weapon)}, {str(potions)}, {str(self.player.get_exp())}'
-        print(player)
 
         # сундук
         chest = f'{self.chest.x}, {self.chest.y}, {self.chest.is_opened}'
-        print(chest)
 
         # предметы
         weapons = ''
         potions = ''
         for item in self.items:
             if isinstance(item, Weapon):
-                weapons += f'{str(item.x)}, {str(item.y)}, {str(item.damage)}, {str(item.field_attack)}' + ';'
+                weapons += f'{str(item.x)}, {str(item.y)}, {str(item.damage)}, {str(item.field_attack)}' + '.'
             elif isinstance(item, Healing_potion):
                 potions += f'{str(item.x)}, {str(item.y)}, {str(item.heal)}'
-
         weapons = weapons[:-1]
+
+        # монстры
+        monsters = ''
+        for monster in self.monsters:
+            monsters += f'{str(monster.x)}, {str(monster.y)}, {str(monster.hp)}, {str(monster.speed)}, ' \
+                        f'{str(monster.damage)}, {str(monster.field_view)}, {str(monster.loot)[2: -2]}, ' \
+                        f'{str(monster.exp)}' + '.'
+        monsters = monsters[:-1]
+
+        print(board_in_string)
+        print(start, finish)
+        print(player)
+        print(chest)
         print(weapons)
         print(potions)
+        print(monsters)
+
+        bd = sqlite3.connect('data/Game_save.db')
+        cur = bd.cursor()
+
+        cur.execute(f"""INSERT INTO Saved_data(data, type) VALUES ('{board_in_string}', 1)""")
+        cur.execute(f"""INSERT INTO Saved_data(data, type) VALUES ('{start}', 2), ('{finish}', 3), ('{player}', 4), 
+        ('{chest}', 5), ('{weapons}', 6), ('{potions}', 7), ('{monsters}', 8)""")
+        bd.commit()
 
     def load_game(self):
         pass
@@ -584,6 +598,8 @@ class Board:
         # self.chest = Chest((x, y), self.all_sprites, is_opened=is_opened)
         # weapon = Weapon(x, y, damage, field_attack, self.all_sprites)
         # potion = Healing_potion(x, y, self.all_sprites, heal=heal)
+        # monster = Monster(x, y, self.all_sprites, hp=hp, speed=speed, damage=damage, field_view=field_view, loot-loot,
+                            # exp=exp)
 
     def has_path(self, x1, y1, x2, y2):
         """Метод для определения доступности из клетки (x1, y1)

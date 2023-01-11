@@ -6,7 +6,7 @@ screen = pygame.display.set_mode((1, 1))
 
 
 class Monster(pygame.sprite.Sprite):
-    def __init__(self, x, y, group, hp=2, speed=1, damage=1, field_view=5, loot=None, exp=5, time_move=2):
+    def __init__(self, x, y, group, hp=3, speed=1, damage=1, field_view=5, loot=None, exp=5, time_move=2):
         super().__init__(*group)
         self.hp = hp
         self.speed = speed
@@ -17,7 +17,7 @@ class Monster(pygame.sprite.Sprite):
         self.loot = loot
         self.exp = exp
         self.time_move = time_move
-        self.cur_move = 0  # [0] - частота хода, [1] - текущий ход
+        self.cur_move = 0
 
     def get_hp(self):
         return self.hp
