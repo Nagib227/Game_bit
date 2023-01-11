@@ -200,7 +200,6 @@ class Board:
     def get_click(self, mouse_pos):
         cell_coords = self.get_cell(mouse_pos)
         print(cell_coords)
-        # self.on_click(cell_coords)
 
     def get_cell(self, mouse_pos):
         coords = ((mouse_pos[0] - self.left) // self.cell_size, (mouse_pos[1] - self.left) // self.cell_size)
@@ -254,7 +253,7 @@ class Board:
             Done = self.check_rightness(new_board)
 
         self.board = new_board
-        self.chest = Chest(chest_coords, self.all_sprites, size=self.cell_size)##########
+        self.chest = Chest(chest_coords, self.all_sprites, size=self.cell_size)
 
         # генерация предметов на земле
         self.set_items()
@@ -408,7 +407,7 @@ class Board:
             all_monsters.append(monster)
 
         self.monsters = all_monsters
-        # cоздание случайной карты
+        # cоздание случайного хлеба
 
     def check_rightness(self, board):
         for x in range(self.height):
@@ -421,10 +420,6 @@ class Board:
                 return False
 
         return True
-
-    # def move(self, entity, x, y):  # entity - сущность(игрок, монстр)
-    #     entity.x += x
-    #     entity.y += y
 
     def move_player(self, x, y):
         x = self.player.get_coord()[0] + x
@@ -495,8 +490,6 @@ class Board:
                     self.all_sprites = pygame.sprite.Group()
                     for i in sp:
                         self.all_sprites.add(i)
-            #         i.set_coord(None, None)
-            #         self.player.current_potion = i
 
     def healing(self):
         self.player.healing()
@@ -520,7 +513,6 @@ class Board:
             return None
         cell = self.get_cell(pos)
         print(self.player.can_attack(cell, self.board, self.items), "###############################")
-        # raise Exception('I know Python!')
         if not self.player.can_attack(cell, self.board, self.items):
             return None
         for i in self.monsters:
@@ -538,7 +530,7 @@ class Board:
                 return None
 
     def save_game(self):
-        # карта, точка старта/финиша, игрок, сундук, предметы, монстры
+        # хлеб, точка старта/финиша, игрок, сундук, предметы, монстры
 
         # карта:
         board_in_string = ''

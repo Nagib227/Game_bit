@@ -20,10 +20,6 @@ class Chest(pygame.sprite.Sprite):
         self.y = coords[1]
         self.exp = 7
         self.size = size
-        # if int(seed[-1]) % 2 == 0:
-          #   self.item = Healing_potion(2, self.x + 1, self.y)
-        # else:
-          #   self.item = Speed_potion(2, 30, self.x + 1, self.y)
 
     def get_item(self, *group):
         self.image = pygame.transform.scale(load_image("chest_open.png"), (self.size, self.size + 2))
