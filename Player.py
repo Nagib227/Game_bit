@@ -13,12 +13,13 @@ class Player(pygame.sprite.Sprite):
         self.x = x
         self.y = y
         self.key = keys
+        # self.key = 3
         self.hp = hp
         self.max_hp = max_hp
         self.active_weapon = weapon
         self.hp_potion = potion
-        # self.current_potion = None
         self.exp = exp
+        self.mask = pygame.mask.from_surface(self.image)
 
     def get_hp_potion(self):
         return self.hp_potion

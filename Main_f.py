@@ -8,19 +8,21 @@ from END import END
 from Load_image import load_image
 from VARIABLES import *
 
-
-def main(btn="new"):
+def main(btn="new", exp=None, hp=None):
     time = TIME
     time_Move = TIME_MOVE
     pygame.init()
     s = S
     size = width, height = s * 40 + 40, s * 40 + 40
     sc = pygame.display.set_mode(size)
+    if exp is None or hp is None:
+        board = Board(s, s, map_save=False)
+    else:
+        board = Board(s, s, map_save=False, exp=exp, hp=hp)
     # if 'continue':
     #     board = Board(s, s, load_game=True)
     # elif 'start':
     #     board = Board(s, s, load_game=False)
-    board = Board(s, s, map_save=False, load_game=False)
     NOT_MOVE = pygame.USEREVENT + 1
     MOVE = pygame.USEREVENT + 2
     BIT = pygame.USEREVENT + 3
@@ -86,7 +88,9 @@ def main(btn="new"):
                         board.move_player(1, 0)
                 if event.key == pygame.K_e:
                     print("E")
-                    board.interact_items()
+                    exp = board.interact_items()
+                    if type(exp) == list:
+                        return exp
                     board.interact_chest()
                 if event.key == pygame.K_1:
                     print("1")
