@@ -16,8 +16,8 @@ def main(btn="new"):
     s = S
     size = width, height = s * 40 + 40, s * 40 + 40
     sc = pygame.display.set_mode(size)
-    board = Board(s, s, map_save=False)  # при передаче в map_save True, то программа будет сохранять удачные карты
-    board.save_game()  # delete
+    board = Board(s, s, map_save=False, load_game=True)  # при передаче в map_save True, то программа будет сохранять удачные карты
+    # board.save_game()  # delete
     NOT_MOVE = pygame.USEREVENT + 1
     MOVE = pygame.USEREVENT + 2
     BIT = pygame.USEREVENT + 3

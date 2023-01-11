@@ -593,7 +593,28 @@ class Board:
         bd.commit()
 
     def load_game(self):
-        pass
+        bd = sqlite3.connect('data/Game_save.db')
+        cur = bd.cursor()
+
+        # карта:
+        board = []
+        pre_board = cur.execute("""SELECT data FROM Saved_data WHERE type = 1""").fetchone()[0].split('.')
+        for row in pre_board:
+            new_row = []
+            for i in row.split(', '):
+                if i != 'Chest':
+                    new_row.append(int(i))
+                else:
+                    new_row.append(i)
+            board.append(new_row)
+
+
+
+        self.board = board
+        self.start_coords = tuple(int(i) for i in cur.execute("""SELECT data FROM Saved_data WHERE type = 2""").fetchone()[0].split(', '))
+        self.finish_coords = tuple(int(i) for i in cur.execute("""SELECT data FROM Saved_data WHERE type = 3""").fetchone()[0].split(', '))
+        print(self.start_coords, self.finish_coords)
+
         # self.player = Player(x, y, self.all_sprites, hp=hp, keys=keys, weapon=weapon, potion=potion)
         # self.chest = Chest((x, y), self.all_sprites, is_opened=is_opened)
         # weapon = Weapon(x, y, damage, field_attack, self.all_sprites)
