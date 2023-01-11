@@ -6,8 +6,8 @@ import pygame
 class Monster_default(Monster):
     image = load_image("monster_default_down.png")
     
-    def __init__(self, x, y, *group, size=30):
-        super().__init__(x, y, group, hp=2, speed=1, field_view=5, loot=None, exp=5)
+    def __init__(self, x, y, *group, size=30, hp=2):
+        super().__init__(x, y, group, hp=hp, speed=1, field_view=5, loot=None, exp=5)
         self.image = pygame.transform.scale(Monster_default.image, (size, size))
         self.rect = self.image.get_rect()
         self.rect.x = y * size

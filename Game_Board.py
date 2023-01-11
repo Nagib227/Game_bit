@@ -38,6 +38,9 @@ class Board:
         # self.wall_3 = pygame.transform.scale(load_image("wall_3.png"), (self.cell_size, self.cell_size))
         self.wall_floor = pygame.transform.scale(load_image("wall_floor.png"), (self.cell_size, self.cell_size))
 
+        self.items = []
+        self.monsters = []
+
         if load_game:
             self.load_game()
         else:
@@ -231,7 +234,6 @@ class Board:
 
     def create_map(self):
         self.board = [[0] * self.width for _ in range(self.height)]
-        self.items = []
         self.set_start_finish_points()
 
         # рандомная карта и точки спавна
@@ -548,12 +550,18 @@ class Board:
         finish = f'{self.finish_coords[0]}, {self.finish_coords[1]}'
 
         # игрок
-        potions = []
+        potions = ''
         for potion in self.player.get_hp_potion():
-            potions.append((str(potion.x), str(potion.y)))
+            potions += f'{str(potion.x)}, {str(potion.y)}' + '.'
+        potions = potions[: -1]
+
+        weapon = None
+        if self.player.active_weapon is not None:
+            weapon = self.player.active_weapon
+            weapon = f'{str(weapon.x)}, {str(weapon.y)}, {str(weapon.damage)}, {str(weapon.field_attack)}'
 
         player = f'{str(self.player.x)}, {str(self.player.y)}, {str(self.player.hp)}, {str(self.player.key)}, ' \
-                 f'{str(self.player.active_weapon)}, {str(potions)}, {str(self.player.get_exp())}'
+                 f'{weapon}, {str(potions)}, {str(self.player.get_exp())}'
 
         # сундук
         chest = f'{self.chest.x}, {self.chest.y}, {self.chest.is_opened}'
@@ -571,9 +579,7 @@ class Board:
         # монстры
         monsters = ''
         for monster in self.monsters:
-            monsters += f'{str(monster.x)}, {str(monster.y)}, {str(monster.hp)}, {str(monster.speed)}, ' \
-                        f'{str(monster.damage)}, {str(monster.field_view)}, {str(monster.loot)[2: -2]}, ' \
-                        f'{str(monster.exp)}' + '.'
+            monsters += f'{str(monster.x)}, {str(monster.y)}, {str(monster.hp)}, {str(monster.speed)}' + '.'
         monsters = monsters[:-1]
 
         print(board_in_string)
@@ -608,19 +614,64 @@ class Board:
                     new_row.append(i)
             board.append(new_row)
 
+        # игрок:
+        pre_player = cur.execute("""SELECT data FROM Saved_data WHERE type = 4""").fetchone()[0].split(', ')
+        potions = []
+        if pre_player[5] != '':
+            for potion in pre_player[5].split('.'):
+                potion = potion.split(', ')
+                potions.append(Healing_potion(int(potion[0]), int(potion[1]), self.all_sprites))
+
+        weapon = None
+        if pre_player[4] != 'None':
+            weapon = pre_player[4].split(', ')
+            if weapon[3] == 1:
+                weapon = Bow(int(weapon[0]), int(weapon[1]), self.all_sprites)
+            elif weapon[3] == 2:
+                weapon = Sword(int(weapon[0]), int(weapon[1]), self.all_sprites)
+
+        player = Player(int(pre_player[0]), int(pre_player[1]), self.all_sprites, hp=int(pre_player[2]),
+                        weapon=weapon, keys=int(pre_player[3]), potion=potions)
+
+        # сундук:
+        pre_chest = cur.execute("""SELECT data FROM Saved_data WHERE type = 5""").fetchone()[0].split(', ')
+        if pre_chest[-1] == 'False':
+            pre_chest[-1] = False
+        else:
+            pre_chest[-1] = True
+        print(pre_chest)
+
+        # предметы:
+        weapons = cur.execute("""SELECT data FROM Saved_data WHERE type = 6""").fetchone()[0].split('.')
+        for weapon in weapons:
+            if weapon[3] == 1:
+                self.items.append(Bow(int(weapon[0]), int(weapon[1]), self.all_sprites))
+            elif weapon[3] == 2:
+                self.items.append(Sword(int(weapon[0]), int(weapon[1]), self.all_sprites))
+
+        potion = cur.execute("""SELECT data FROM Saved_data WHERE type = 7""").fetchone()[0].split(', ')
+        print(potion)
+        if potion[0] != '':
+            self.items.append(Healing_potion(int(potion[0]), int(potion[1]), self.all_sprites, heal=int(potion[2])))
+
+        # монстров определять по speed!
+        monsters = cur.execute("""SELECT data FROM Saved_data WHERE type = 8""").fetchone()[0].split('.')
+        if monsters:
+            for monster in monsters:
+                monster = monster.split(', ')
+                if monster[-1] == '1':
+                    self.monsters.append(
+                        Monster_default(int(monster[0]), int(monster[1]), self.all_sprites, hp=int(monster[2])))
+                elif monster[-1] == '2':
+                    self.monsters.append(
+                        Monster_speed(int(monster[0]), int(monster[1]), self.all_sprites, hp=int(monster[2])))
 
 
         self.board = board
         self.start_coords = tuple(int(i) for i in cur.execute("""SELECT data FROM Saved_data WHERE type = 2""").fetchone()[0].split(', '))
         self.finish_coords = tuple(int(i) for i in cur.execute("""SELECT data FROM Saved_data WHERE type = 3""").fetchone()[0].split(', '))
-        print(self.start_coords, self.finish_coords)
-
-        # self.player = Player(x, y, self.all_sprites, hp=hp, keys=keys, weapon=weapon, potion=potion)
-        # self.chest = Chest((x, y), self.all_sprites, is_opened=is_opened)
-        # weapon = Weapon(x, y, damage, field_attack, self.all_sprites)
-        # potion = Healing_potion(x, y, self.all_sprites, heal=heal)
-        # monster = Monster(x, y, self.all_sprites, hp=hp, speed=speed, damage=damage, field_view=field_view, loot-loot,
-                            # exp=exp)
+        self.player = player
+        self.chest = Chest((int(pre_chest[0]), int(pre_chest[0])), self.all_sprites, is_opened=pre_chest[-1])
 
     def has_path(self, x1, y1, x2, y2):
         """Метод для определения доступности из клетки (x1, y1)
@@ -643,22 +694,3 @@ class Board:
                             v.append((x + dx, y + dy))
         dist = d.get((x2, y2), -1)
         return dist >= 0
-
-
-# if __name__ == '__main__':
-#     pygame.init()
-#     s = 22
-#     size = width, height = s * 30 + 40, s * 30 + 40
-#     screen = pygame.display.set_mode(size)
-#
-#     board = Board(s, s)
-#     running = True
-#     while running:
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 running = False
-#             if event.type == pygame.MOUSEBUTTONDOWN:
-#                 board.get_click(event.pos)
-#         screen.fill((0, 0, 0))
-#         board.render(screen)
-#         pygame.display.flip()
