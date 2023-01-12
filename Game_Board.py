@@ -106,11 +106,11 @@ class Board:
                     # sprite.rect.y = j * self.cell_size
                     # floor_group.add(sprite)
 
-        # floor_group.draw(field)
+        floor_group.draw(field)
         
         self.items_sprites.draw(field)
 
-        # self.entities_sprites.draw(field)
+        self.entities_sprites.draw(field)
 
         screen.blit(field, (self.left, self.top))
 
@@ -634,15 +634,15 @@ class Board:
                 potions.append(Healing_potion(None, None, self.items_sprites))
 
         weapon = None
-        print("weapon")
+        print(pre_player[4])
         if pre_player[4] != 'None':
             weapon = pre_player[4].split(', ')
-            if weapon[3] == 1:
-                print("bow")
-                weapon = Bow(int(weapon[0]), int(weapon[1]), self.items_sprites)
-            elif weapon[3] == 2:
-                print("sword")
-                weapon = Sword(int(weapon[0]), int(weapon[1]), self.items_sprites)
+            print(weapon)
+            if int(eval(weapon)[2]) == 1:
+                print()
+                weapon = Bow(int(eval(weapon)[0]), int(eval(weapon)[1]), self.items_sprites)
+            elif int(eval(weapon)[2]) == 2:
+                weapon = Sword(int(eval(weapon)[0]), int(eval(weapon)[1]), self.items_sprites)
 
         player = Player(int(pre_player[0]), int(pre_player[1]), self.entities_sprites, hp=int(pre_player[2]),
                         weapon=weapon, keys=int(pre_player[3]), hp_potion=potions, size=self.cell_size)
@@ -656,11 +656,16 @@ class Board:
 
         # предметы:
         weapons = cur.execute("""SELECT data FROM Saved_data WHERE type = 6""").fetchone()[0].split('.')
-        for weapon in weapons:
-            if weapon[3] == 1:
-                self.items.append(Bow(int(weapon[0]), int(weapon[1]), self.items_sprites, size=self.cell_size))
-            elif weapon[3] == 2:
-                self.items.append(Sword(int(weapon[0]), int(weapon[1]), self.items_sprites, size=self.cell_size))
+        for i in weapons:
+            print(i)
+            if int(eval(i)[2]) == 1:
+                if eval(i)[0] is None or eval(i)[1] is None:
+                    continue
+                self.items.append(Bow(int(eval(i)[0]), int(eval(i)[1]), self.items_sprites, size=self.cell_size))
+            elif int(eval(i)[2]) == 2:
+                if eval(i)[0] is None or eval(i)[1] is None:
+                    continue
+                self.items.append(Sword(int(eval(i)[0]), int(eval(i)[1]), self.items_sprites, size=self.cell_size))
 
         potion = cur.execute("""SELECT data FROM Saved_data WHERE type = 7""").fetchone()[0].split(', ')
         if potion[0] != '':
