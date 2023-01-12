@@ -19,8 +19,6 @@ from Load_image import load_image
 class Board:
     # создание поля
     def __init__(self, board_width, board_height, map_save=False, load_game=False, exp=0, hp=[]):
-        self.hp = hp
-        self.exp = exp
         self.width = board_width
         self.height = board_height
         # значения по умолчанию
@@ -53,6 +51,9 @@ class Board:
         if load_game:
             self.load_game()
         else:
+            self.hp = hp
+            self.exp = exp
+
             self.map_save = map_save
 
             self.seed = self.get_seed()
@@ -545,7 +546,7 @@ class Board:
                 return None
 
     def save_game(self):
-        # хлеб, точка старта/финиша, игрок, сундук, предметы, монстры
+        # карта, точка старта/финиша, игрок, сундук, предметы, монстры
 
         # карта:
         board_in_string = ''
@@ -559,7 +560,7 @@ class Board:
         # игрок
         potions = ''
         for potion in self.player.hp_potion:
-            potions += f'{str(potion.x)}, {str(potion.y)}' + '.'
+            potions += f'{str(potion.x)},{str(potion.y)}' + '.'
         potions = potions[: -1]
 
         weapon = None
@@ -600,6 +601,9 @@ class Board:
         bd = sqlite3.connect('data/Game_save.db')
         cur = bd.cursor()
 
+        cur.execute("""DELETE from Saved_data""")
+        bd.commit()
+
         cur.execute(f"""INSERT INTO Saved_data(data, type) VALUES ('{board_in_string}', 1)""")
         cur.execute(f"""INSERT INTO Saved_data(data, type) VALUES ('{start}', 2), ('{finish}', 3), ('{player}', 4), 
         ('{chest}', 5), ('{weapons}', 6), ('{potions}', 7), ('{monsters}', 8)""")
@@ -609,7 +613,7 @@ class Board:
         bd = sqlite3.connect('data/Game_save.db')
         cur = bd.cursor()
 
-        # карта:
+        # хлеб:
         board = []
         pre_board = cur.execute("""SELECT data FROM Saved_data WHERE type = 1""").fetchone()[0].split('.')
         for row in pre_board:
@@ -626,8 +630,8 @@ class Board:
         potions = []
         if pre_player[5] != '':
             for potion in pre_player[5].split('.'):
-                potion = potion.split(', ')
-                potions.append(Healing_potion(int(potion[0]), int(potion[1]), self.items_sprites))
+                potion = potion.split(',')
+                potions.append(Healing_potion(None, None, self.items_sprites))
 
         weapon = None
         if pre_player[4] != 'None':
@@ -638,7 +642,7 @@ class Board:
                 weapon = Sword(int(weapon[0]), int(weapon[1]), self.items_sprites)
 
         player = Player(int(pre_player[0]), int(pre_player[1]), self.entities_sprites, hp=int(pre_player[2]),
-                        weapon=weapon, keys=int(pre_player[3]), potion=potions)
+                        weapon=weapon, keys=int(pre_player[3]), hp_potion=potions)
 
         # сундук:
         pre_chest = cur.execute("""SELECT data FROM Saved_data WHERE type = 5""").fetchone()[0].split(', ')
@@ -646,7 +650,6 @@ class Board:
             pre_chest[-1] = False
         else:
             pre_chest[-1] = True
-        print(pre_chest)
 
         # предметы:
         weapons = cur.execute("""SELECT data FROM Saved_data WHERE type = 6""").fetchone()[0].split('.')
@@ -657,9 +660,10 @@ class Board:
                 self.items.append(Sword(int(weapon[0]), int(weapon[1]), self.items_sprites))
 
         potion = cur.execute("""SELECT data FROM Saved_data WHERE type = 7""").fetchone()[0].split(', ')
-        print(potion)
         if potion[0] != '':
-            self.items.append(Healing_potion(int(potion[0]), int(potion[1]), self.items_sprites, heal=int(potion[2])))
+            if potion[0] != 'None':
+                self.items.append(
+                    Healing_potion(int(potion[0]), int(potion[1]), self.items_sprites, heal=int(potion[2])))
 
         # монстров определять по speed!
         monsters = cur.execute("""SELECT data FROM Saved_data WHERE type = 8""").fetchone()[0].split('.')
@@ -677,6 +681,8 @@ class Board:
         self.board = board
         self.start_coords = tuple(int(i) for i in cur.execute("""SELECT data FROM Saved_data WHERE type = 2""").fetchone()[0].split(', '))
         self.finish_coords = tuple(int(i) for i in cur.execute("""SELECT data FROM Saved_data WHERE type = 3""").fetchone()[0].split(', '))
+        print(self.finish_coords)
+        self.hp = potions
         self.player = player
         self.chest = Chest((int(pre_chest[0]), int(pre_chest[0])), self.items_sprites, is_opened=pre_chest[-1])
 

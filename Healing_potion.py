@@ -4,11 +4,12 @@ from Load_image import load_image
 
 class Healing_potion(pygame.sprite.Sprite):    
     def __init__(self, x, y, group, heal=4, size=30):
-        super().__init__(*group)
+        super().__init__(group)
         self.image = pygame.transform.scale(load_image("health_potion.png"), (size, size))
         self.rect = self.image.get_rect()
-        self.rect.x = y * size
-        self.rect.y = x * size
+        if y is not None:
+            self.rect.x = y * size
+            self.rect.y = x * size
         self.x = x
         self.y = y
         self.heal = heal

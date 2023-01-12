@@ -8,6 +8,7 @@ from END import END
 from Load_image import load_image
 from VARIABLES import *
 
+
 def main(btn="new", exp=None, hp=None):
     time = TIME
     time_Move = TIME_MOVE
@@ -15,14 +16,14 @@ def main(btn="new", exp=None, hp=None):
     s = S
     size = width, height = s * 40 + 40, s * 40 + 40
     sc = pygame.display.set_mode(size)
-    if exp is None or hp is None:
-        board = Board(s, s, map_save=False)
+
+    if btn == 'continue':
+        board = Board(s, s, load_game=True)
+    elif exp is None or hp is None:
+        board = Board(s, s)
     else:
         board = Board(s, s, map_save=False, exp=exp, hp=hp)
-    # if 'continue':
-    #     board = Board(s, s, load_game=True)
-    # elif 'start':
-    #     board = Board(s, s, load_game=False)
+
     NOT_MOVE = pygame.USEREVENT + 1
     MOVE = pygame.USEREVENT + 2
     BIT = pygame.USEREVENT + 3
@@ -42,6 +43,7 @@ def main(btn="new", exp=None, hp=None):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+                board.save_game()
                 END()  # !!!!!!!!!!!!!!
             if event.type == BIT:
                 for i in bits_group:
