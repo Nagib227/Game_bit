@@ -6,7 +6,7 @@ import pygame
 class Monster_speed(Monster):
     image = load_image("monster_speed_down.png")
     
-    def __init__(self, x, y, *group, size=30, hp=5):
+    def __init__(self, x, y, *group, size=40, hp=5):
         super().__init__(x, y, group, hp=hp, speed=2, field_view=7, loot=["key"], exp=10)
         self.image = pygame.transform.scale(Monster_speed.image, (size, size))
         self.rect = self.image.get_rect()

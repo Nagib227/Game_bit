@@ -6,7 +6,7 @@ import pygame
 class Sword(Weapon):
     image = load_image("sword.png")
     
-    def __init__(self, x, y, *group, size=30):
+    def __init__(self, x, y, *group, size=40):
         super().__init__(x, y, 2, 1, group)
         self.image = pygame.transform.scale(Sword.image, (size, size))
         self.rect = self.image.get_rect()
