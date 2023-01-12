@@ -4,7 +4,7 @@ import pygame
 
 
 class Chest(pygame.sprite.Sprite):
-    def __init__(self, coords, *group, size=30, is_opened=False):
+    def __init__(self, coords, *group, size=40, is_opened=False):
         super().__init__(*group)
         self.size = size
         self.is_opened = is_opened
