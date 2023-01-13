@@ -147,7 +147,7 @@ class Board:
         if self.player.active_weapon:
             sprite.image = pygame.transform.scale(self.player.active_weapon.get_img(), (90, 77))
         else:
-            sprite.image = pygame.transform.scale(load_image("empty_weapon.png"), (70, 70))
+            sprite.image = pygame.transform.scale(load_image("empty_weapon.png"), (0, 0)) # 70, 70
         sprite.rect = sprite.image.get_rect()
         sprite.rect.x = x + 5
         sprite.rect.y = y + s_h + 25
