@@ -531,7 +531,7 @@ class Board:
         if not weapon:
             return None
         cell = self.get_cell(pos)
-        print(self.player.can_attack(cell, self.board, self.items), "###############################")
+        print(self.player.can_attack(cell, self.board, self.items))
         if not self.player.can_attack(cell, self.board, self.items):
             return None
         for i in self.monsters:
@@ -571,7 +571,7 @@ class Board:
             weapon = self.player.active_weapon
             if isinstance(weapon, Bow):
                 weapon_ind = 1
-            if isinstance(weapon, Sword):
+            elif isinstance(weapon, Sword):
                 weapon_ind = 2
             weapon = f'{...}, {str(weapon_ind)}'
 
@@ -639,7 +639,6 @@ class Board:
         print(pre_player, "PPPPPPPPPPPPPPPPPPPPPPPPPP")
         if pre_player[6] != '':
             for potion in pre_player[6].split('.'):
-                potion = potion.split(',')
                 potions.append(Healing_potion(None, None, self.items_sprites, size=self.cell_size))
 
         weapon = None
@@ -673,15 +672,6 @@ class Board:
                     continue
                 self.items.append(Sword(int(eval(i)[0]), int(eval(i)[1]), self.items_sprites, size=self.cell_size))
         print(weapons)
-        # for i in weapons:
-        #     i = i.split(', ')
-        #     if i[0] == 'None':
-        #         continue
-        #     print(i)
-        #     if i[2] == '1':
-        #         self.items.append(Bow(int(eval(i[0])), int(eval(i[1])), self.items_sprites, size=self.cell_size))
-        #     elif i[2] == '2':
-        #         self.items.append(Sword(int(eval(i[0])), int(eval(i[1])), self.items_sprites, size=self.cell_size))
 
         potion = cur.execute("""SELECT data FROM Saved_data WHERE type = 7""").fetchone()[0].split(', ')
         if potion[0] != '':
@@ -711,7 +701,7 @@ class Board:
         ############
         self.hp = potions
         self.player = player
-        self.chest = Chest((int(pre_chest[0]), int(pre_chest[0])), self.items_sprites, is_opened=pre_chest[-1])
+        self.chest = Chest((int(pre_chest[0]), int(pre_chest[1])), self.items_sprites, is_opened=pre_chest[-1])
 
     def has_path(self, x1, y1, x2, y2):
         """Метод для определения доступности из клетки (x1, y1)
