@@ -107,7 +107,7 @@ class Board:
                     # floor_group.add(sprite)
 
         floor_group.draw(field)
-        
+
         self.items_sprites.draw(field)
 
         self.entities_sprites.draw(field)
@@ -472,6 +472,7 @@ class Board:
             if self.player.get_key() >= 3:
                 return [self.player.get_exp(), self.player.get_hp_potion()]
         for i in self.items:
+            print(i)
             if i.get_coord()[0] is None:
                 continue
             if issubclass(i.__class__, Weapon):
@@ -486,6 +487,8 @@ class Board:
                     if old:
                         old.set_coord(x, y)
                         old.true_draw(x, y)
+                    if not old in self.items and not old is None:
+                        self.items.append(old)
                     return None
             elif issubclass(i.__class__, Chest):
                 print("chest")
@@ -563,11 +566,16 @@ class Board:
             potions += f'{str(potion.x)},{str(potion.y)}' + '.'
         potions = potions[: -1]
 
-        weapon = None
+        weapon = "None, None"
         if self.player.active_weapon is not None:
             weapon = self.player.active_weapon
-            weapon = f'{str(weapon.x)},{str(weapon.y)},{str(weapon.damage)},{str(weapon.field_attack)}'
+            if isinstance(weapon, Bow):
+                weapon_ind = 1
+            if isinstance(weapon, Sword):
+                weapon_ind = 2
+            weapon = f'{...}, {str(weapon_ind)}'
 
+        print(weapon)
         player = f'{str(self.player.x)}, {str(self.player.y)}, {str(self.player.hp)}, {str(self.player.key)}, ' \
                  f'{weapon}, {str(potions)}, {str(self.player.get_exp())}'
 
@@ -590,13 +598,13 @@ class Board:
             monsters += f'{str(monster.x)}, {str(monster.y)}, {str(monster.hp)}, {str(monster.speed)}' + '.'
         monsters = monsters[:-1]
 
-        # print(board_in_string)
-        # print(start, finish)
-        # print(player)
-        # print(chest)
-        # print(weapons)
-        # print(potions)
-        # print(monsters)
+        print(board_in_string)
+        print(start, finish)
+        print(player)
+        print(chest)
+        print(weapons, 1)
+        print(potions)
+        print(monsters)
 
         bd = sqlite3.connect('data/Game_save.db')
         cur = bd.cursor()
@@ -628,24 +636,23 @@ class Board:
         # игрок:
         pre_player = cur.execute("""SELECT data FROM Saved_data WHERE type = 4""").fetchone()[0].split(', ')
         potions = []
-        if pre_player[5] != '':
-            for potion in pre_player[5].split('.'):
-                # potion = potion.split(',')
-                potions.append(Healing_potion(None, None, self.items_sprites))
+        print(pre_player, "PPPPPPPPPPPPPPPPPPPPPPPPPP")
+        if pre_player[6] != '':
+            for potion in pre_player[6].split('.'):
+                potion = potion.split(',')
+                potions.append(Healing_potion(None, None, self.items_sprites, size=self.cell_size))
 
         weapon = None
-        print(pre_player[4])
-        if pre_player[4] != 'None':
-            weapon = pre_player[4].split(',')
-            print(weapon)
-            if int(eval(weapon[2])) == 1:
-                print()
-                weapon = Bow(None, None, self.items_sprites)
-            elif int(eval(weapon[2])) == 2:
-                weapon = Sword(None, None, self.items_sprites)
+        if pre_player[4] == f"{...}":
+            weapon = pre_player[4].split(', ')
+            if int(pre_player[5]) == 1:
+                weapon = Bow(0, 0, self.items_sprites)
+            elif int(pre_player[5]) == 2:
+                weapon = Sword(0, 0, self.items_sprites)
+            weapon.none_draw()
 
         player = Player(int(pre_player[0]), int(pre_player[1]), self.entities_sprites, hp=int(pre_player[2]),
-                        weapon=weapon, keys=int(pre_player[3]), hp_potion=potions, size=self.cell_size)
+                        weapon=weapon, keys=int(pre_player[3]), hp_potion=potions)
 
         # сундук:
         pre_chest = cur.execute("""SELECT data FROM Saved_data WHERE type = 5""").fetchone()[0].split(', ')
@@ -656,22 +663,29 @@ class Board:
 
         # предметы:
         weapons = cur.execute("""SELECT data FROM Saved_data WHERE type = 6""").fetchone()[0].split('.')
-        print(weapons)
         for i in weapons:
-            i = i.split(', ')
-            if i[0] == 'None':
-                continue
-            print(i)
-            if i[2] == '1':
-                self.items.append(Bow(int(eval(i[0])), int(eval(i[1])), self.items_sprites, size=self.cell_size))
-            elif i[2] == '2':
-                self.items.append(Sword(int(eval(i[0])), int(eval(i[1])), self.items_sprites, size=self.cell_size))
+            if int(eval(i)[2]) == 1:
+                if eval(i)[0] is None or eval(i)[1] is None:
+                    continue
+                self.items.append(Bow(int(eval(i)[0]), int(eval(i)[1]), self.items_sprites, size=self.cell_size))
+            elif int(eval(i)[2]) == 2:
+                if eval(i)[0] is None or eval(i)[1] is None:
+                    continue
+                self.items.append(Sword(int(eval(i)[0]), int(eval(i)[1]), self.items_sprites, size=self.cell_size))
+        print(weapons)
+        # for i in weapons:
+        #     i = i.split(', ')
+        #     if i[0] == 'None':
+        #         continue
+        #     print(i)
+        #     if i[2] == '1':
+        #         self.items.append(Bow(int(eval(i[0])), int(eval(i[1])), self.items_sprites, size=self.cell_size))
+        #     elif i[2] == '2':
+        #         self.items.append(Sword(int(eval(i[0])), int(eval(i[1])), self.items_sprites, size=self.cell_size))
 
         potion = cur.execute("""SELECT data FROM Saved_data WHERE type = 7""").fetchone()[0].split(', ')
         if potion[0] != '':
-            print(potion)
             if potion[0] != 'None':
-                print(potion)
                 self.items.append(
                     Healing_potion(int(potion[0]), int(potion[1]), self.items_sprites, heal=int(potion[2])))
 
@@ -682,10 +696,10 @@ class Board:
                 monster = monster.split(', ')
                 if monster[-1] == '1':
                     self.monsters.append(
-                        Monster_default(int(monster[0]), int(monster[1]), self.entities_sprites, hp=int(monster[2]), size=self.cell_size))
+                        Monster_default(int(monster[0]), int(monster[1]), self.entities_sprites, hp=int(monster[2])))
                 elif monster[-1] == '2':
                     self.monsters.append(
-                        Monster_speed(int(monster[0]), int(monster[1]), self.entities_sprites, hp=int(monster[2]), size=self.cell_size))
+                        Monster_speed(int(monster[0]), int(monster[1]), self.entities_sprites, hp=int(monster[2])))
 
 
         self.board = board
@@ -697,8 +711,7 @@ class Board:
         ############
         self.hp = potions
         self.player = player
-        self.chest = Chest((int(pre_chest[0]), int(pre_chest[1])), self.items_sprites, is_opened=pre_chest[-1], size=self.cell_size)
-        print(self.items)
+        self.chest = Chest((int(pre_chest[0]), int(pre_chest[0])), self.items_sprites, is_opened=pre_chest[-1])
 
     def has_path(self, x1, y1, x2, y2):
         """Метод для определения доступности из клетки (x1, y1)
