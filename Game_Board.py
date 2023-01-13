@@ -472,6 +472,7 @@ class Board:
             if self.player.get_key() >= 3:
                 return [self.player.get_exp(), self.player.get_hp_potion()]
         for i in self.items:
+            print(i)
             if i.get_coord()[0] is None:
                 continue
             if issubclass(i.__class__, Weapon):
@@ -486,6 +487,8 @@ class Board:
                     if old:
                         old.set_coord(x, y)
                         old.true_draw(x, y)
+                    if not old in self.items and not old is None:
+                        self.items.append(old)
                     return None
             elif issubclass(i.__class__, Chest):
                 print("chest")
@@ -561,13 +564,18 @@ class Board:
         potions = ''
         for potion in self.player.hp_potion:
             potions += f'{str(potion.x)},{str(potion.y)}' + '.'
-        potions = potions[: -1]
+        potions = potions[:-1]
 
-        weapon = None
+        weapon = "None, None"
         if self.player.active_weapon is not None:
             weapon = self.player.active_weapon
-            weapon = f'{str(weapon.x)}, {str(weapon.y)}, {str(weapon.damage)}, {str(weapon.field_attack)}'
+            if isinstance(weapon, Bow):
+                weapon_ind = 1
+            if isinstance(weapon, Sword):
+                weapon_ind = 2
+            weapon = f'{...}, {str(weapon_ind)}'
 
+        print(weapon)
         player = f'{str(self.player.x)}, {str(self.player.y)}, {str(self.player.hp)}, {str(self.player.key)}, ' \
                  f'{weapon}, {str(potions)}, {str(self.player.get_exp())}'
 
@@ -594,7 +602,7 @@ class Board:
         print(start, finish)
         print(player)
         print(chest)
-        print(weapons)
+        print(weapons, 1)
         print(potions)
         print(monsters)
 
@@ -628,21 +636,20 @@ class Board:
         # игрок:
         pre_player = cur.execute("""SELECT data FROM Saved_data WHERE type = 4""").fetchone()[0].split(', ')
         potions = []
-        if pre_player[5] != '':
-            for potion in pre_player[5].split('.'):
+        print(pre_player, "PPPPPPPPPPPPPPPPPPPPPPPPPP")
+        if pre_player[6] != '':
+            for potion in pre_player[6].split('.'):
                 potion = potion.split(',')
-                potions.append(Healing_potion(None, None, self.items_sprites))
+                potions.append(Healing_potion(None, None, self.items_sprites, size=self.cell_size))
 
         weapon = None
-        print(pre_player[4])
-        if pre_player[4] != 'None':
+        if pre_player[4] == f"{...}":
             weapon = pre_player[4].split(', ')
-            print(weapon)
-            if int(eval(weapon)[2]) == 1:
-                print()
-                weapon = Bow(int(eval(weapon)[0]), int(eval(weapon)[1]), self.items_sprites)
-            elif int(eval(weapon)[2]) == 2:
-                weapon = Sword(int(eval(weapon)[0]), int(eval(weapon)[1]), self.items_sprites)
+            if int(pre_player[5]) == 1:
+                weapon = Bow(0, 0, self.items_sprites)
+            elif int(pre_player[5]) == 2:
+                weapon = Sword(0, 0, self.items_sprites)
+            weapon.none_draw()
 
         player = Player(int(pre_player[0]), int(pre_player[1]), self.entities_sprites, hp=int(pre_player[2]),
                         weapon=weapon, keys=int(pre_player[3]), hp_potion=potions, size=self.cell_size)
@@ -657,7 +664,6 @@ class Board:
         # предметы:
         weapons = cur.execute("""SELECT data FROM Saved_data WHERE type = 6""").fetchone()[0].split('.')
         for i in weapons:
-            print(i)
             if int(eval(i)[2]) == 1:
                 if eval(i)[0] is None or eval(i)[1] is None:
                     continue
@@ -671,7 +677,7 @@ class Board:
         if potion[0] != '':
             if potion[0] != 'None':
                 self.items.append(
-                    Healing_potion(int(potion[0]), int(potion[1]), self.items_sprites, heal=int(potion[2])))
+                    Healing_potion(int(potion[0]), int(potion[1]), self.items_sprites, heal=int(potion[2]), size=self.cell_size))
 
         # монстров определять по speed!
         monsters = cur.execute("""SELECT data FROM Saved_data WHERE type = 8""").fetchone()[0].split('.')
