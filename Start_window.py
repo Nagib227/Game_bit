@@ -6,13 +6,13 @@ from VARIABLES import *
 from Load_image import load_image
 
 
-os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (1000, 200)
+os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (800, 100)
 pygame.init()
 sc = pygame.display.set_mode((1, 1))
 
 
 class Fon(pygame.sprite.Sprite):
-    image = pygame.transform.scale(load_image('fon_1.png'), (S * 30 + 40, S * 30 + 40))
+    image = pygame.transform.scale(load_image('fon_1.png'), (S * CELL_SIZE + 40, S * CELL_SIZE + 40))
     
     def __init__(self, size, *group):
         super().__init__(*group)
@@ -25,18 +25,18 @@ class Fon(pygame.sprite.Sprite):
 
     def update(self):
         if self.fon == 1:
-            self.image = pygame.transform.scale(load_image('fon_2.png'), (S * 30 + 40, S * 30 + 40))
+            self.image = pygame.transform.scale(load_image('fon_2.png'), (S * CELL_SIZE + 40, S * CELL_SIZE + 40))
             self.fon = 2
             return None
         if self.fon == 2:
-            self.image = pygame.transform.scale(load_image('fon_1.png'), (S * 30 + 40, S * 30 + 40))
+            self.image = pygame.transform.scale(load_image('fon_1.png'), (S * CELL_SIZE + 40, S * CELL_SIZE + 40))
             self.fon = 1
 
 
 def start_window():
     pygame.init()
     s = S
-    size = WIDTH, HEIGHT = s * 30 + 40, s * 30 + 40
+    size = WIDTH, HEIGHT = s * CELL_SIZE + 40, s * CELL_SIZE + 40
     sc = pygame.display.set_mode(size)
     intro_text = ["ЗАСТАВКА", "",
                   "Правила игры",
@@ -64,11 +64,11 @@ def start_window():
                 END()
             elif event.type == pygame.KEYDOWN or \
                     event.type == pygame.MOUSEBUTTONDOWN:
-                if 150 < event.pos[0] < 300 and\
-                   450 < event.pos[1] < 525:
+                if 150 < event.pos[0] < 150 + 200 and\
+                   600 < event.pos[1] < 600 + 100:
                     return "new"
-                elif 375 < event.pos[0] < 560 and\
-                     455 < event.pos[1] < 515:
+                elif 550 < event.pos[0] < 550 + 245 and\
+                     610 < event.pos[1] < 610 + 75:
                     return "continue"
         for i in all_sprites:
             i.update()
@@ -82,9 +82,9 @@ def start_window():
             intro_rect.x = 10
             text_coord += intro_rect.height
             sc.blit(string_rendered, intro_rect)
-        btn = pygame.transform.scale(load_image('btn_start.png'), (150, 75))
-        sc.blit(btn, (150, 450))
-        btn = pygame.transform.scale(load_image('continue.png'), (185, 60))
-        sc.blit(btn, (375, 455))
+        btn = pygame.transform.scale(load_image('btn_start.png'), (200, 100))
+        sc.blit(btn, (150, 600))
+        btn = pygame.transform.scale(load_image('continue.png'), (245, 75))
+        sc.blit(btn, (550, 610))
         pygame.display.flip()
         clock.tick(FPS)

@@ -13,7 +13,7 @@ sc = pygame.display.set_mode((1, 1))
 def Lose(exp):
     pygame.init()
     s = S
-    size = WIDTH, HEIGHT = s * 30 + 40, s * 30 + 40
+    size = WIDTH, HEIGHT = s * CELL_SIZE + 40, s * CELL_SIZE + 40
     sc = pygame.display.set_mode(size)
     intro_text = [f"Вы набрали {exp} очков", 
                   "Для продолжения нажмите кнопку мышки"]

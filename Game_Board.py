@@ -14,6 +14,7 @@ from Lose import Lose
 
 from Weapon import Weapon
 from Load_image import load_image
+from VARIABLES import *
 
 
 class Board:
@@ -28,7 +29,7 @@ class Board:
 
         self.left = 20
         self.top = 20
-        self.cell_size = 40
+        self.cell_size = CELL_SIZE
 
         self.floor = pygame.transform.scale(load_image("ground.png"), (self.cell_size, self.cell_size))
         self.start = pygame.transform.scale(load_image("spawn.png"), (self.cell_size, self.cell_size))
@@ -146,7 +147,7 @@ class Board:
         if self.player.active_weapon:
             sprite.image = pygame.transform.scale(self.player.active_weapon.get_img(), (90, 77))
         else:
-            sprite.image = pygame.transform.scale(load_image("empty_weapon.png"), (70, 70))
+            sprite.image = pygame.transform.scale(load_image("empty_weapon.png"), (0, 0)) # 70, 70
         sprite.rect = sprite.image.get_rect()
         sprite.rect.x = x + 5
         sprite.rect.y = y + s_h + 25
