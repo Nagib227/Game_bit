@@ -1,7 +1,6 @@
 import pygame
 import sqlite3
 from datetime import datetime
-from Gauss_noize import GaussNoize
 
 from Player import Player
 from Monster_default import Monster_default
@@ -12,6 +11,7 @@ from Chest import Chest
 from Healing_potion import Healing_potion
 from Lose import Lose
 
+from Gauss_noize import GaussNoize
 from Weapon import Weapon
 from Load_image import load_image
 from VARIABLES import *
@@ -214,6 +214,7 @@ class Board:
 
     # cоздание случайной карты
     def get_seed(self):
+        # current_time = "2023-01-14 11:29:19.502000"
         current_time = datetime.now()
 
         date, time = str(current_time).split()
