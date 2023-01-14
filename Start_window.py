@@ -38,16 +38,30 @@ def start_window():
     s = S
     size = WIDTH, HEIGHT = s * CELL_SIZE + 40, s * CELL_SIZE + 40
     sc = pygame.display.set_mode(size)
-    intro_text = ["ЗАСТАВКА", "",
-                  "Правила игры",
-                  "Если в правилах несколько строк,",
-                  "приходится выводить их построчно"]
+    intro_text = ["                                                              Игра \"БИТ\"",
+                  "",
+                  "    Правила игры:",
+                  "Вы появляетесь в точке спавна, клетки спавна полностью безопасны. Для перехода на",
+                  "следущую карту необходимо собрать 3 ключа с особых монстров и дойти до клетки",
+                  "выхода.",
+                  "Ходить и бить вы можете только под бит фоновой музыки.",
+                  "",
+                  '',
+                  '    Управление:',
+                  "Передвижение игрока: \"W\", \"A\", \"S\", \"D\"",
+                  "Взаимодействие с предметами/сундуками/финишом: \"Е\"",
+                  "Использование зелья лечения: \"1\"",
+                  "Атаковать монстров: ПКМ.",
+                  "",
+                  "",
+                  "    Игра автоматически сохраняется при закрытии, если вы находитесь в процессе",
+                  "прохождения карты. Продолжить можно нажав \"CONTINUE\"."]
     all_sprites = pygame.sprite.Group()
     Fon(size, all_sprites)
     font = pygame.font.Font(None, 30)
     text_coord = 50
     for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color('white'))
+        string_rendered = font.render(line, True, (200, 225, 200))
         intro_rect = string_rendered.get_rect()
         text_coord += 10
         intro_rect.top = text_coord
@@ -75,7 +89,7 @@ def start_window():
         all_sprites.draw(sc)
         text_coord = 50
         for line in intro_text:
-            string_rendered = font.render(line, 1, pygame.Color('white'))
+            string_rendered = font.render(line, True, (200, 225, 200))
             intro_rect = string_rendered.get_rect()
             text_coord += 10
             intro_rect.top = text_coord

@@ -15,8 +15,8 @@ def Lose(exp):
     s = S
     size = WIDTH, HEIGHT = s * CELL_SIZE + 40, s * CELL_SIZE + 40
     sc = pygame.display.set_mode(size)
-    intro_text = [f"Вы набрали {exp} очков", 
-                  "Для продолжения нажмите кнопку мышки"]
+    intro_text = [f"Вы набрали {exp} очков!",
+                  "Для продолжения нажмите любою клавишу."]
     fon = pygame.transform.scale(load_image('lose_3.png'), (WIDTH, HEIGHT))
     sc.blit(fon, (0, 0))
     font = pygame.font.Font(None, 30)

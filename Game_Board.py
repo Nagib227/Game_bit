@@ -204,13 +204,13 @@ class Board:
         key_group.add(sprite)
         key_group.draw(sc)
 
-    # def get_click(self, mouse_pos):
-    #     cell_coords = self.get_cell(mouse_pos)
-    #     print(cell_coords)
+    def get_click(self, mouse_pos):
+        cell_coords = self.get_cell(mouse_pos)
+        print(cell_coords)
     #
-    # def get_cell(self, mouse_pos):
-    #     coords = ((mouse_pos[0] - self.left) // self.cell_size, (mouse_pos[1] - self.left) // self.cell_size)
-    #     return coords
+    def get_cell(self, mouse_pos):
+        coords = ((mouse_pos[0] - self.left) // self.cell_size, (mouse_pos[1] - self.left) // self.cell_size)
+        return coords
 
     # cоздание случайной карты
     def get_seed(self):

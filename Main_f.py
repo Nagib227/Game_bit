@@ -35,8 +35,8 @@ def main(btn="new", exp=None, hp=None):
     end = True
     start = False
     bits_group = pygame.sprite.Group()
-    Bit(-30, height - 110, round((width - 40) / round(time / 10 * 3.05)), (width - 40) // 2, bits_group, rot=False)
-    Bit(width + 0, height - 110, -round((width - 40) / round(time / 10 * 3.05)), (width - 40) // 2, bits_group, rot=True)
+    Bit(-10, height - 110, round((width - 40) / round(time / 10 * 3.05)), (width - 40) // 2, bits_group, rot=False)
+    Bit(width - 20, height - 110, -round((width - 40) / round(time / 10 * 3.05)), (width - 40) // 2, bits_group, rot=True)
     Heart_bit((width - 110) // 2, height - 120, bits_group)
     pygame.mixer.music.load('data/01 - Tombtorial (Tutorial).mp3')
     pygame.mixer.music.play(-1)
@@ -66,6 +66,7 @@ def main(btn="new", exp=None, hp=None):
                 end = True
                 print("Конец тайминга хода")
                 if "kill" == board.interact_monsters():
+                    pygame.mixer.music.stop()
                     return "kill"
                 print("Ход Монсра")
                 board.move_monsters()
