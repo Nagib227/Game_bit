@@ -108,7 +108,7 @@ class Board:
                     # floor_group.add(sprite)
 
         floor_group.draw(field)
-        
+
         self.items_sprites.draw(field)
 
         self.entities_sprites.draw(field)
@@ -533,7 +533,7 @@ class Board:
         if not weapon:
             return None
         cell = self.get_cell(pos)
-        print(self.player.can_attack(cell, self.board, self.items), "###############################")
+        print(self.player.can_attack(cell, self.board, self.items))
         if not self.player.can_attack(cell, self.board, self.items):
             return None
         for i in self.monsters:
@@ -566,14 +566,14 @@ class Board:
         potions = ''
         for potion in self.player.hp_potion:
             potions += f'{str(potion.x)},{str(potion.y)}' + '.'
-        potions = potions[:-1]
+        potions = potions[: -1]
 
         weapon = "None, None"
         if self.player.active_weapon is not None:
             weapon = self.player.active_weapon
             if isinstance(weapon, Bow):
                 weapon_ind = 1
-            if isinstance(weapon, Sword):
+            elif isinstance(weapon, Sword):
                 weapon_ind = 2
             weapon = f'{...}, {str(weapon_ind)}'
 
@@ -641,7 +641,6 @@ class Board:
         print(pre_player, "PPPPPPPPPPPPPPPPPPPPPPPPPP")
         if pre_player[6] != '':
             for potion in pre_player[6].split('.'):
-                potion = potion.split(',')
                 potions.append(Healing_potion(None, None, self.items_sprites, size=self.cell_size))
 
         weapon = None
@@ -654,7 +653,7 @@ class Board:
             weapon.none_draw()
 
         player = Player(int(pre_player[0]), int(pre_player[1]), self.entities_sprites, hp=int(pre_player[2]),
-                        weapon=weapon, keys=int(pre_player[3]), hp_potion=potions, size=self.cell_size)
+                        weapon=weapon, keys=int(pre_player[3]), hp_potion=potions)
 
         # сундук:
         pre_chest = cur.execute("""SELECT data FROM Saved_data WHERE type = 5""").fetchone()[0].split(', ')
@@ -674,12 +673,13 @@ class Board:
                 if eval(i)[0] is None or eval(i)[1] is None:
                     continue
                 self.items.append(Sword(int(eval(i)[0]), int(eval(i)[1]), self.items_sprites, size=self.cell_size))
+        print(weapons)
 
         potion = cur.execute("""SELECT data FROM Saved_data WHERE type = 7""").fetchone()[0].split(', ')
         if potion[0] != '':
             if potion[0] != 'None':
                 self.items.append(
-                    Healing_potion(int(potion[0]), int(potion[1]), self.items_sprites, heal=int(potion[2]), size=self.cell_size))
+                    Healing_potion(int(potion[0]), int(potion[1]), self.items_sprites, heal=int(potion[2])))
 
         # монстров определять по speed!
         monsters = cur.execute("""SELECT data FROM Saved_data WHERE type = 8""").fetchone()[0].split('.')
@@ -688,10 +688,10 @@ class Board:
                 monster = monster.split(', ')
                 if monster[-1] == '1':
                     self.monsters.append(
-                        Monster_default(int(monster[0]), int(monster[1]), self.entities_sprites, hp=int(monster[2]), size=self.cell_size))
+                        Monster_default(int(monster[0]), int(monster[1]), self.entities_sprites, hp=int(monster[2])))
                 elif monster[-1] == '2':
                     self.monsters.append(
-                        Monster_speed(int(monster[0]), int(monster[1]), self.entities_sprites, hp=int(monster[2]), size=self.cell_size))
+                        Monster_speed(int(monster[0]), int(monster[1]), self.entities_sprites, hp=int(monster[2])))
 
 
         self.board = board
@@ -703,7 +703,7 @@ class Board:
         ############
         self.hp = potions
         self.player = player
-        self.chest = Chest((int(pre_chest[0]), int(pre_chest[1])), self.items_sprites, is_opened=pre_chest[-1], size=self.cell_size)
+        self.chest = Chest((int(pre_chest[0]), int(pre_chest[1])), self.items_sprites, is_opened=pre_chest[-1])
 
     def has_path(self, x1, y1, x2, y2):
         """Метод для определения доступности из клетки (x1, y1)

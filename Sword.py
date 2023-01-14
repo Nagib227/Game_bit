@@ -10,8 +10,9 @@ class Sword(Weapon):
         super().__init__(x, y, 2, 1, group)
         self.image = pygame.transform.scale(Sword.image, (size, size))
         self.rect = self.image.get_rect()
-        self.rect.x = y * size
-        self.rect.y = x * size
+        if x is not None:
+            self.rect.x = y * size
+            self.rect.y = x * size
         self.size = size
 
     def get_img(self):
