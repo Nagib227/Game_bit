@@ -204,13 +204,13 @@ class Board:
         key_group.add(sprite)
         key_group.draw(sc)
 
-    def get_click(self, mouse_pos):
-        cell_coords = self.get_cell(mouse_pos)
-        print(cell_coords)
-
-    def get_cell(self, mouse_pos):
-        coords = ((mouse_pos[0] - self.left) // self.cell_size, (mouse_pos[1] - self.left) // self.cell_size)
-        return coords
+    # def get_click(self, mouse_pos):
+    #     cell_coords = self.get_cell(mouse_pos)
+    #     print(cell_coords)
+    #
+    # def get_cell(self, mouse_pos):
+    #     coords = ((mouse_pos[0] - self.left) // self.cell_size, (mouse_pos[1] - self.left) // self.cell_size)
+    #     return coords
 
     # cоздание случайной карты
     def get_seed(self):
@@ -275,7 +275,7 @@ class Board:
 
     def set_start_finish_points(self):
         self.seed = self.randomize(self.seed)
-        print(self.seed)
+#        print(self.seed)
 
         self.start_cells = []
         # чёт и чёт - верх
@@ -313,7 +313,7 @@ class Board:
             self.start_coords = (coord, 0)
             self.finish_coords = (coord2, self.width - 1)
 
-        print(self.start_coords, self.finish_coords)
+#        print(self.start_coords, self.finish_coords)
 
     def paint_start_finish_points(self):
         self.start_cells = []
@@ -388,7 +388,7 @@ class Board:
             self.items.append(Sword(self.start_coords[0] - 1, self.width - 1, self.items_sprites, size=self.cell_size))
             self.items.append(Bow(self.start_coords[0] + 1, self.width - 1, self.items_sprites, size=self.cell_size))
 
-        print(self.items)
+#        print(self.items)
 
     # размещение сущностей
     def set_entities(self):
@@ -532,7 +532,7 @@ class Board:
         if not weapon:
             return None
         cell = self.get_cell(pos)
-        print(self.player.can_attack(cell, self.board, self.items))
+#        print(self.player.can_attack(cell, self.board, self.items))
         if not self.player.can_attack(cell, self.board, self.items):
             return None
         for i in self.monsters:
@@ -599,13 +599,13 @@ class Board:
             monsters += f'{str(monster.x)}, {str(monster.y)}, {str(monster.hp)}, {str(monster.speed)}' + '.'
         monsters = monsters[:-1]
 
-        print(board_in_string)
-        print(start, finish)
-        print(player)
-        print(chest)
-        print(weapons, 1)
-        print(potions)
-        print(monsters)
+        # print(board_in_string)
+        # print(start, finish)
+        # print(player)
+        # print(chest)
+        # print(weapons, 1)
+        # print(potions)
+        # print(monsters)
 
         bd = sqlite3.connect('data/Game_save.db')
         cur = bd.cursor()

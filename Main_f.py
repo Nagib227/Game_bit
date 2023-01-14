@@ -27,17 +27,19 @@ def main(btn="new", exp=None, hp=None):
     NOT_MOVE = pygame.USEREVENT + 1
     MOVE = pygame.USEREVENT + 2
     BIT = pygame.USEREVENT + 3
-    pygame.time.set_timer(BIT, 10)
+    pygame.time.set_timer(BIT, 8)
     clock = pygame.time.Clock()
-    fps = 120
+    fps = 244
     move = False
     move_P = False
     end = True
     start = False
     bits_group = pygame.sprite.Group()
-    # Bit(-50, height - 110, round((width - 40) / round(time / 10 * 2.05)), (width - 40) // 2, bits_group, rot=False)
-    # Bit(width + 20, height - 110, -round((width - 40) / round(time / 10 * 2.05)), (width - 40) // 2, bits_group, rot=True)
+    Bit(-30, height - 110, round((width - 40) / round(time / 10 * 3.05)), (width - 40) // 2, bits_group, rot=False)
+    Bit(width + 0, height - 110, -round((width - 40) / round(time / 10 * 3.05)), (width - 40) // 2, bits_group, rot=True)
     Heart_bit((width - 110) // 2, height - 120, bits_group)
+    pygame.mixer.music.load('data/01 - Tombtorial (Tutorial).mp3')
+    pygame.mixer.music.play(-1)
     running = True
     while running:
         for event in pygame.event.get():
