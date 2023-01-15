@@ -1,5 +1,5 @@
 # переменные
 S = 22
-TIME = 1000
-TIME_MOVE = 150
+TIME = 890
+TIME_MOVE = 250
 CELL_SIZE = 40
