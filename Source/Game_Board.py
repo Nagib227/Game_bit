@@ -428,7 +428,7 @@ class Board:
         for x in range(self.height):
             for y in range(self.width):
                 if board[x][y] in [10, 12]:
-                    if not self.has_path(x, y, self.start_coords[1], self.start_coords[0]):
+                    if not self.has_path(x, y, self.start_coords[0], self.start_coords[1]):
                         return False
 
         if not self.has_path(self.finish_coords[0], self.finish_coords[1], self.start_coords[0], self.start_coords[1]):
