@@ -1,3 +1,7 @@
 # Game_beat
-Game by Artyom Tokmakov and Dmitriy Velichko.
-To start go to output/main/main.exe
+Игра Артёма Токмакова и Дмитрия Величко.
+
+Игра на языке python, написанная с помощью библиотеки pygame.
+
+Иcходный код находить в папке 'Source'.
+А для запуска перейдите в 'output/main/main.exe'.
