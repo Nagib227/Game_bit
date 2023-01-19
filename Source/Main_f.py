@@ -14,7 +14,7 @@ def main(btn="new", exp=None, hp=None):
     time_Move = TIME_MOVE
     pygame.init()
     s = S
-    size = width, height = s * 40 + 40, s * 40 + 40
+    size = width, height = s * CELL_SIZE + 40, s * CELL_SIZE + 40
     sc = pygame.display.set_mode(size)
 
     if btn == 'continue':

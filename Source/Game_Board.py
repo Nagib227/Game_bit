@@ -653,7 +653,7 @@ class Board:
             weapon.none_draw()
 
         player = Player(int(pre_player[0]), int(pre_player[1]), self.entities_sprites, hp=int(pre_player[2]),
-                        weapon=weapon, keys=int(pre_player[3]), hp_potion=potions)
+                        weapon=weapon, keys=int(pre_player[3]), hp_potion=potions, size=self.cell_size)
 
         # сундук:
         pre_chest = cur.execute("""SELECT data FROM Saved_data WHERE type = 5""").fetchone()[0].split(', ')
@@ -688,10 +688,10 @@ class Board:
                 monster = monster.split(', ')
                 if monster[-1] == '1':
                     self.monsters.append(
-                        Monster_default(int(monster[0]), int(monster[1]), self.entities_sprites, hp=int(monster[2])))
+                        Monster_default(int(monster[0]), int(monster[1]), self.entities_sprites, hp=int(monster[2]), size=self.cell_size))
                 elif monster[-1] == '2':
                     self.monsters.append(
-                        Monster_speed(int(monster[0]), int(monster[1]), self.entities_sprites, hp=int(monster[2])))
+                        Monster_speed(int(monster[0]), int(monster[1]), self.entities_sprites, hp=int(monster[2]), size=self.cell_size))
 
 
         self.board = board
@@ -703,7 +703,7 @@ class Board:
         ############
         self.hp = potions
         self.player = player
-        self.chest = Chest((int(pre_chest[0]), int(pre_chest[1])), self.items_sprites, is_opened=pre_chest[-1])
+        self.chest = Chest((int(pre_chest[0]), int(pre_chest[1])), self.items_sprites, is_opened=pre_chest[-1], size=self.cell_size)
 
     def has_path(self, x1, y1, x2, y2):
         """Метод для определения доступности из клетки (x1, y1)
